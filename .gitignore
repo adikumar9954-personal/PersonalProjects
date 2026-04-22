@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+env/
+
+# Claude editor settings
+.claude/
+
+# ── eonet_explorer ──────────────────────────────────────────────────────────
+# Raw API download cache (regenerate with: python eonet_poisson.py --refresh)
+eonet_explorer/cache/
+
+# ── fairness_credit ─────────────────────────────────────────────────────────
+# ACS PUMS raw microdata (~270 MB each — over GitHub's 100 MB hard limit)
+fairness_credit/data/
+
+# Large intermediate parquet files (HMDA data, ~45 MB each)
+fairness_credit/hmda_*.parquet
+
+# TIGER/Line shapefiles (~22 MB)
+fairness_credit/tiger_fl/
+
+# ── nba_valuation ────────────────────────────────────────────────────────────
+# Cached API pulls (all regenerable via data/ingest.py)
+nba_valuation/data/cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fairness in Machine Learning: Theory & Practice</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --bg:       #0f1117;
+      --surface:  #1a1d27;
+      --surface2: #21263a;
+      --border:   #2e3350;
+      --accent:   #6c8eff;
+      --accent2:  #ff7b6b;
+      --accent3:  #52d9a0;
+      --accent4:  #f5c842;
+      --text:     #e2e8f0;
+      --muted:    #8892a4;
+      --code-bg:  #141720;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      line-height: 1.85;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 2rem 0;
+    }
+
+    nav .nav-title {
+      font-family: 'Georgia', serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 1.5rem 1rem;
+    }
+
+    nav a {
+      display: block;
+      padding: 0.35rem 1.5rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-family: sans-serif;
+      transition: color 0.15s;
+      border-left: 2px solid transparent;
+    }
+    nav a:hover { color: var(--text); }
+    nav a.active { color: var(--accent); border-left-color: var(--accent); }
+    nav a.section { color: var(--text); font-weight: bold; margin-top: 0.75rem; font-size: 0.9rem; }
+    nav a.sub { padding-left: 2.5rem; }
+
+    main {
+      flex: 1;
+      max-width: 860px;
+      padding: 4rem 3rem 6rem;
+    }
+
+    /* ── Typography ── */
+    h1 {
+      font-size: 2.4rem;
+      font-weight: normal;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      font-style: italic;
+    }
+
+    h2 {
+      font-size: 1.65rem;
+      font-weight: normal;
+      color: var(--accent);
+      margin: 3.5rem 0 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      color: var(--accent3);
+      margin: 2rem 0 0.6rem;
+      font-weight: normal;
+    }
+
+    h4 {
+      font-size: 1rem;
+      color: var(--accent4);
+      margin: 1.5rem 0 0.4rem;
+      font-family: sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    p { margin-bottom: 1rem; }
+
+    a { color: var(--accent); }
+
+    strong { color: var(--text); }
+
+    em { color: var(--muted); }
+
+    /* ── Callout boxes ── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      background: var(--surface2);
+      padding: 1rem 1.4rem;
+      margin: 1.5rem 0;
+      border-radius: 0 6px 6px 0;
+    }
+    .callout.definition { border-color: var(--accent3); }
+    .callout.theorem    { border-color: var(--accent4); }
+    .callout.warning    { border-color: var(--accent2); }
+    .callout.intuition  { border-color: #a78bfa; }
+
+    .callout-label {
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .callout.definition .callout-label { color: var(--accent3); }
+    .callout.theorem    .callout-label { color: var(--accent4); }
+    .callout.warning    .callout-label { color: var(--accent2); }
+    .callout.intuition  .callout-label { color: #a78bfa; }
+
+    /* ── Math display ── */
+    .math-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.6rem;
+      margin: 1.2rem 0;
+      overflow-x: auto;
+    }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.4rem;
+      overflow-x: auto;
+      margin: 1.2rem 0;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9em;
+    }
+
+    p code, li code {
+      background: var(--surface2);
+      padding: 0.1em 0.35em;
+      border-radius: 3px;
+      color: var(--accent3);
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0;
+      font-size: 0.92rem;
+    }
+    th {
+      background: var(--surface2);
+      color: var(--accent);
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-family: sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    tr:hover td { background: var(--surface2); }
+
+    /* ── Results boxes ── */
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .result-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      text-align: center;
+    }
+
+    .result-card .value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent);
+      font-family: sans-serif;
+    }
+
+    .result-card .label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: sans-serif;
+      margin-top: 0.2rem;
+    }
+
+    .result-card.warn .value { color: var(--accent2); }
+    .result-card.ok   .value { color: var(--accent3); }
+
+    /* ── Section anchor ── */
+    .section-anchor { display: block; position: relative; top: -80px; }
+
+    /* ── Horizontal rule ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    /* ── Lists ── */
+    ul, ol {
+      padding-left: 1.6rem;
+      margin-bottom: 1rem;
+    }
+    li { margin-bottom: 0.3rem; }
+
+    /* ── Header strip ── */
+    .hero {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 0;
+    }
+
+    .tag {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-right: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .fraction-annotation {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-top: -0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Proof environment ── */
+    .proof {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.5rem;
+      margin: 1.2rem 0;
+      background: var(--surface);
+    }
+    .proof-label {
+      font-family: sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent4);
+      margin-bottom: 0.6rem;
+    }
+    .qed {
+      text-align: right;
+      color: var(--accent4);
+      font-size: 1.2rem;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+<!-- ═══════════════════════════════════ NAV ════════════════════════════════════ -->
+<nav>
+  <div class="nav-title">Contents</div>
+  <a href="#intro"     class="section">Introduction</a>
+  <a href="#data"      class="section">1. The Data</a>
+  <a href="#acs"       class="sub">1.1 ACS Survey</a>
+  <a href="#folktables" class="sub">1.2 Folktables</a>
+  <a href="#features"  class="sub">1.3 Features</a>
+  <a href="#logreg"    class="section">2. Logistic Regression</a>
+  <a href="#log-model" class="sub">2.1 The Model</a>
+  <a href="#log-loss"  class="sub">2.2 MLE & Cross-Entropy</a>
+  <a href="#log-optim" class="sub">2.3 Optimization</a>
+  <a href="#xgboost"   class="section">3. XGBoost</a>
+  <a href="#boost-idea"  class="sub">3.1 Boosting Idea</a>
+  <a href="#boost-math"  class="sub">3.2 The Math</a>
+  <a href="#boost-tree"  class="sub">3.3 Optimal Trees</a>
+  <a href="#boost-hyper" class="sub">3.4 Hyperparameters</a>
+  <a href="#fairness"  class="section">4. Fairness Metrics</a>
+  <a href="#dp"        class="sub">4.1 Demographic Parity</a>
+  <a href="#eo"        class="sub">4.2 Equalized Odds</a>
+  <a href="#cal"       class="sub">4.3 Calibration</a>
+  <a href="#impossible" class="section">5. Impossibility</a>
+  <a href="#chould"    class="sub">5.1 The Theorem</a>
+  <a href="#proof-sec" class="sub">5.2 Derivation</a>
+  <a href="#results"   class="section">6. Our Results</a>
+  <a href="#interp"    class="sub">6.1 Interpreting Numbers</a>
+  <a href="#next"      class="sub">6.2 What Comes Next</a>
+</nav>
+
+<!-- ═══════════════════════════════════ MAIN ═══════════════════════════════════ -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <span class="tag">Financial Mathematics</span>
+      <span class="tag">Statistical Learning</span>
+      <span class="tag">Algorithmic Fairness</span>
+    </div>
+    <h1>Fairness in Machine Learning:<br>Theory &amp; Practice</h1>
+    <p class="subtitle">
+      A graduate-level walkthrough of what our code is actually doing — from the
+      probability model underlying logistic regression to the impossibility theorem
+      that sits at the heart of every fairness debate.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       INTRODUCTION
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="intro"></span>
+  <h2>Introduction</h2>
+
+  <p>
+    We built a classifier that predicts whether an individual earns more than $50,000
+    per year, then measured how fairly it treats people of different racial groups.
+    That one-sentence description conceals a surprisingly rich set of mathematical
+    questions. What does it mean to <em>predict</em> something? How does a boosted tree
+    differ from a logistic model — not just in performance but in its mathematical
+    structure? And most importantly: what does it mean for a classifier to be <em>fair</em>,
+    and can we always achieve fairness?
+  </p>
+
+  <p>
+    This document answers those questions carefully, building from first principles.
+    You already know regression; the goal here is to show you how everything connects
+    to deeper statistical ideas you may have seen in other contexts.
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 1: THE DATA
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="data"></span>
+  <h2>1. The Data</h2>
+
+  <span class="section-anchor" id="acs"></span>
+  <h3>1.1 The American Community Survey</h3>
+
+  <p>
+    Every year, the U.S. Census Bureau randomly samples roughly 3.5 million households
+    through the <strong>American Community Survey (ACS)</strong>. Unlike the decennial
+    census (which counts everyone), the ACS is a probability sample — each housing unit
+    has a known, non-zero probability of selection, and respondents are legally required
+    to respond.
+  </p>
+
+  <p>
+    From a statistical standpoint, the ACS is a <strong>stratified cluster sample</strong>:
+    the country is divided into Primary Sampling Units (PSUs), which are sampled with
+    probability proportional to size, and then addresses within PSUs are sampled.
+    Each record comes with a survey weight <code>PWGTP</code> — the number of people in
+    the population that this respondent represents. For a proper population-level
+    analysis you should use these weights; for our purposes (training a classifier) we
+    treat the sample as roughly iid, which is a simplification worth knowing you are making.
+  </p>
+
+  <p>
+    The 2018 California 1-Year file contains <strong>195,665 individual records</strong>.
+    California is the largest state sample and chosen because its demographic diversity
+    makes the fairness analysis more interesting.
+  </p>
+
+  <span class="section-anchor" id="folktables"></span>
+  <h3>1.2 Folktables: Standardizing ACS for ML Research</h3>
+
+  <p>
+    The raw ACS data requires significant preprocessing. The
+    <strong>Folktables</strong> library (Ding et al., 2021, NeurIPS) packages a set of
+    canonical prediction tasks derived from ACS, designed specifically for fairness
+    research. The key contribution is a principled answer to a question that sounds
+    trivial but isn't: <em>which columns should you use, and how should you handle
+    missingness?</em>
+  </p>
+
+  <p>
+    The <code>ACSIncome</code> task applies the following filter before giving you data:
+  </p>
+
+  <div class="math-block">
+    \[
+      \text{Include individual } i \text{ if: } \text{AGEP}_i \geq 16
+      \;\wedge\; \text{PINCP}_i > 100
+      \;\wedge\; \text{WKHP}_i > 0
+      \;\wedge\; \text{PWGTP}_i \geq 1
+    \]
+  </div>
+
+  <p class="fraction-annotation">
+    Age at least 16, positive income above $100 (filters out negative income from business
+    losses), working at least 1 hour per week. This makes the prediction task meaningful —
+    we're not predicting income for retirees or children.
+  </p>
+
+  <p>
+    The <strong>label</strong> is a binary threshold: does annual personal income
+    exceed $50,000? This threshold is arbitrary — it happens to be roughly the 2018
+    U.S. median individual income. A different threshold would give different base rates
+    and different fairness numbers, which is itself an important sensitivity to be aware of.
+  </p>
+
+  <span class="section-anchor" id="features"></span>
+  <h3>1.3 The Feature Set</h3>
+
+  <p>
+    Folktables uses exactly 10 features. Each is worth understanding because later,
+    when we examine SHAP values for model explanation, knowing what these variables
+    actually measure matters:
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Description</th><th>Type</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>AGEP</code></td><td>Age</td><td>Continuous</td><td>0–99</td></tr>
+      <tr><td><code>COW</code></td><td>Class of worker</td><td>Categorical</td><td>1=private for-profit, 2=private non-profit, 3=local gov, etc.</td></tr>
+      <tr><td><code>SCHL</code></td><td>Educational attainment</td><td>Ordinal</td><td>1=no schooling, up to 24=doctorate</td></tr>
+      <tr><td><code>MAR</code></td><td>Marital status</td><td>Categorical</td><td>1=married, 5=never married, etc.</td></tr>
+      <tr><td><code>OCCP</code></td><td>Occupation</td><td>Categorical</td><td>~500 codes; major driver of income</td></tr>
+      <tr><td><code>POBP</code></td><td>Place of birth</td><td>Categorical</td><td>State or country</td></tr>
+      <tr><td><code>RELP</code></td><td>Relationship to householder</td><td>Categorical</td><td>Reference person, spouse, child, etc.</td></tr>
+      <tr><td><code>WKHP</code></td><td>Hours worked per week</td><td>Continuous</td><td>1–99</td></tr>
+      <tr><td><code>SEX</code></td><td>Sex</td><td>Binary</td><td>1=male, 2=female</td></tr>
+      <tr><td><code>RAC1P</code></td><td>Race (recoded)</td><td>Categorical</td><td>1=White, 2=Black, 6=Asian, etc.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warning">
+    <div class="callout-label">⚠ Critical Point</div>
+    <p style="margin:0">
+      <code>RAC1P</code> (race) is both a <strong>feature</strong> given to the model
+      <em>and</em> the <strong>protected attribute</strong> we measure fairness against.
+      In many real-world deployments, race is excluded from the feature set — yet
+      models can still be racially discriminatory because other features like
+      <code>OCCP</code>, <code>POBP</code>, and <code>SCHL</code> are themselves
+      correlated with race due to historical discrimination. This is called
+      <strong>proxy discrimination</strong>, and it means removing a sensitive
+      attribute from the feature set does not, by itself, produce a fair model.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 2: LOGISTIC REGRESSION
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="logreg"></span>
+  <h2>2. Logistic Regression</h2>
+
+  <span class="section-anchor" id="log-model"></span>
+  <h3>2.1 The Probability Model</h3>
+
+  <p>
+    Logistic regression is often introduced as "regression for classification," but
+    that framing undersells it. It is more precisely a <strong>generalized linear
+    model (GLM)</strong> for a Bernoulli-distributed outcome. Understanding it from
+    this angle makes the loss function obvious rather than mysterious.
+  </p>
+
+  <p>
+    Let \(Y_i \in \{0, 1\}\) be the income label for individual \(i\), and let
+    \(\mathbf{x}_i \in \mathbb{R}^{10}\) be their feature vector. We model:
+  </p>
+
+  <div class="math-block">
+    \[
+      Y_i \;\sim\; \text{Bernoulli}(p_i), \qquad p_i = P(Y_i = 1 \mid \mathbf{x}_i)
+    \]
+  </div>
+
+  <p>
+    The challenge is that \(p_i\) must lie in \([0,1]\), but a linear predictor
+    \(\boldsymbol{\beta}^\top \mathbf{x}_i\) can take any value in \(\mathbb{R}\).
+    We need a <strong>link function</strong> to map between them. The logistic model
+    uses the <strong>logit link</strong>:
+  </p>
+
+  <div class="math-block">
+    \[
+      \log \frac{p_i}{1 - p_i} = \boldsymbol{\beta}^\top \mathbf{x}_i
+    \]
+  </div>
+
+  <p>
+    Solving for \(p_i\) gives the sigmoid function:
+  </p>
+
+  <div class="math-block">
+    \[
+      p_i = \sigma(\boldsymbol{\beta}^\top \mathbf{x}_i)
+          = \frac{1}{1 + e^{-\boldsymbol{\beta}^\top \mathbf{x}_i}}
+    \]
+  </div>
+
+  <p>
+    The logit \(\log[p/(1-p)]\) is the <strong>log-odds</strong> of the outcome.
+    A coefficient \(\beta_j\) represents the change in log-odds for a one-unit
+    increase in \(x_j\), holding everything else constant. This has a direct
+    interpretation: \(e^{\beta_j}\) is the multiplicative change in the odds ratio.
+  </p>
+
+  <div class="callout intuition">
+    <div class="callout-label">🔍 Intuition: Why the logit?</div>
+    <p style="margin:0">
+      The logit is the <em>canonical link function</em> for the Bernoulli family in
+      exponential family theory — it arises naturally, not by arbitrary choice. More
+      concretely: if you think of the log-odds as a "latent score" of creditworthiness
+      or income potential, the logistic model says that score is a linear function of
+      the features. The sigmoid then converts that score to a probability.
+    </p>
+  </div>
+
+  <span class="section-anchor" id="log-loss"></span>
+  <h3>2.2 Maximum Likelihood Estimation and Cross-Entropy Loss</h3>
+
+  <p>
+    We estimate \(\boldsymbol{\beta}\) by maximum likelihood. The likelihood of
+    observing the data is:
+  </p>
+
+  <div class="math-block">
+    \[
+      \mathcal{L}(\boldsymbol{\beta})
+      = \prod_{i=1}^n p_i^{y_i} (1 - p_i)^{1 - y_i}
+    \]
+  </div>
+
+  <p>
+    Taking the negative log (for minimization) gives the <strong>binary cross-entropy loss</strong>:
+  </p>
+
+  <div class="math-block">
+    \[
+      \ell(\boldsymbol{\beta})
+      = -\frac{1}{n}\sum_{i=1}^n \left[
+          y_i \log p_i + (1 - y_i) \log(1 - p_i)
+        \right]
+    \]
+  </div>
+
+  <p>
+    This loss has a beautiful information-theoretic interpretation: it is the
+    <strong>KL divergence</strong> between the empirical distribution of labels and the
+    model's predicted distribution, averaged over samples. Minimizing it is equivalent
+    to finding the distribution closest (in KL sense) to the true data-generating
+    process, within the family of logistic models.
+  </p>
+
+  <span class="section-anchor" id="log-optim"></span>
+  <h3>2.3 Optimization and Regularization</h3>
+
+  <p>
+    Unlike ordinary least squares, logistic regression has no closed-form solution.
+    sklearn's <code>LogisticRegression</code> uses a coordinate-descent algorithm (for
+    L1) or L-BFGS (for L2 or no regularization). By default it applies L2
+    regularization (ridge), adding \(\frac{1}{2C} \|\boldsymbol{\beta}\|^2\) to the
+    loss. With <code>max_iter=1000</code> and <code>StandardScaler</code>, the
+    features are standardized so that all coefficients are on comparable scales and
+    the optimization landscape is well-conditioned.
+  </p>
+
+  <p>
+    We call <code>StandardScaler</code> because gradient-based optimization is
+    sensitive to feature scale — if one feature ranges over [0, 500] and another
+    over [0, 2], the gradient landscape is poorly scaled and convergence is slow.
+    After scaling, each feature has mean 0 and variance 1.
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 3: XGBOOST
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="xgboost"></span>
+  <h2>3. XGBoost: Gradient Boosted Trees</h2>
+
+  <span class="section-anchor" id="boost-idea"></span>
+  <h3>3.1 The Core Idea of Boosting</h3>
+
+  <p>
+    Boosting is a <strong>meta-algorithm</strong> for turning a collection of weak
+    learners into a strong one. The key insight, due to Schapire (1990), is that a
+    learner only needs to be slightly better than random guessing (a "weak learner")
+    to be useful — you can boost it into an arbitrarily accurate predictor.
+  </p>
+
+  <p>
+    The intuition: train a model on the data, look at where it made mistakes,
+    <em>upweight</em> those examples, train another model, and repeat. Each new model
+    focuses on the residual errors of its predecessors. The final prediction is a
+    weighted vote of all models.
+  </p>
+
+  <p>
+    <strong>Gradient boosting</strong> (Friedman 2001) makes this precise using the
+    language of optimization. We are fitting an additive model:
+  </p>
+
+  <div class="math-block">
+    \[
+      F_T(\mathbf{x}) = \sum_{t=1}^{T} f_t(\mathbf{x})
+    \]
+  </div>
+
+  <p>
+    where each \(f_t\) is a decision tree, and we want to minimize some loss
+    \(\sum_i \ell(y_i, F_T(\mathbf{x}_i))\). We cannot optimize over all trees
+    simultaneously — the space is too large. Instead, we build the model greedily:
+    given the current ensemble \(F_{t-1}\), find the \(f_t\) that most reduces the loss.
+  </p>
+
+  <span class="section-anchor" id="boost-math"></span>
+  <h3>3.2 The XGBoost Objective: Second-Order Taylor Expansion</h3>
+
+  <p>
+    The XGBoost contribution (Chen &amp; Guestrin, 2016) is to approximate the loss
+    using a second-order Taylor expansion. At step \(t\), the current predictions are
+    \(\hat{y}_i^{(t-1)}\). We want to add a new tree \(f_t\) such that:
+  </p>
+
+  <div class="math-block">
+    \[
+      \mathcal{L}^{(t)}
+      = \sum_{i=1}^n \ell\!\left(y_i,\; \hat{y}_i^{(t-1)} + f_t(\mathbf{x}_i)\right)
+        + \Omega(f_t)
+    \]
+  </div>
+
+  <p>
+    Taylor-expanding to second order in \(f_t(\mathbf{x}_i)\) around
+    \(\hat{y}_i^{(t-1)}\):
+  </p>
+
+  <div class="math-block">
+    \[
+      \mathcal{L}^{(t)}
+      \approx \sum_{i=1}^n \left[
+        \ell(y_i, \hat{y}_i^{(t-1)})
+        + g_i\, f_t(\mathbf{x}_i)
+        + \tfrac{1}{2} h_i\, f_t(\mathbf{x}_i)^2
+      \right] + \Omega(f_t)
+    \]
+  </div>
+
+  <p>
+    where we define the first and second derivatives of the loss with respect to
+    the <em>current prediction</em>:
+  </p>
+
+  <div class="math-block">
+    \[
+      g_i = \frac{\partial \,\ell(y_i, \hat{y}_i^{(t-1)})}{\partial\, \hat{y}_i^{(t-1)}}
+      \qquad
+      h_i = \frac{\partial^2 \ell(y_i, \hat{y}_i^{(t-1)})}{\partial (\hat{y}_i^{(t-1)})^2}
+    \]
+  </div>
+
+  <div class="callout intuition">
+    <div class="callout-label">🔍 Why second order?</div>
+    <p style="margin:0">
+      The first derivative \(g_i\) is the gradient — it tells you which direction
+      to move. The second derivative \(h_i\) is the curvature — it tells you how
+      large a step to take. Using both is analogous to Newton's method vs. gradient
+      descent. Vanilla gradient boosting only uses \(g_i\); XGBoost uses both, which
+      makes the step sizes more intelligent and convergence faster. For the binary
+      cross-entropy loss, \(g_i = \hat{p}_i - y_i\) (prediction error) and
+      \(h_i = \hat{p}_i(1 - \hat{p}_i)\) (variance of the prediction).
+    </p>
+  </div>
+
+  <p>
+    Dropping the constant term \(\ell(y_i, \hat{y}_i^{(t-1)})\), the objective
+    we're minimizing over the structure of \(f_t\) is:
+  </p>
+
+  <div class="math-block">
+    \[
+      \tilde{\mathcal{L}}^{(t)}
+      = \sum_{i=1}^n \left[ g_i f_t(\mathbf{x}_i) + \tfrac{1}{2} h_i f_t(\mathbf{x}_i)^2 \right]
+        + \Omega(f_t)
+    \]
+  </div>
+
+  <span class="section-anchor" id="boost-tree"></span>
+  <h3>3.3 Optimal Leaf Weights</h3>
+
+  <p>
+    A tree \(f_t\) partitions the feature space into \(J\) leaves. Let
+    \(I_j = \{i : \mathbf{x}_i \in \text{leaf } j\}\) be the set of training
+    examples falling in leaf \(j\), and let \(w_j \in \mathbb{R}\) be the output
+    value of leaf \(j\). The regularization term is:
+  </p>
+
+  <div class="math-block">
+    \[
+      \Omega(f_t) = \gamma J + \frac{1}{2}\lambda \sum_{j=1}^J w_j^2
+    \]
+  </div>
+
+  <p>
+    where \(\gamma\) penalizes the number of leaves (complexity) and \(\lambda\) is
+    an L2 penalty on the leaf weights. Substituting into the objective and grouping
+    by leaf:
+  </p>
+
+  <div class="math-block">
+    \[
+      \tilde{\mathcal{L}}^{(t)}
+      = \sum_{j=1}^J \left[
+          \left(\sum_{i \in I_j} g_i\right) w_j
+          + \frac{1}{2}\left(\sum_{i \in I_j} h_i + \lambda\right) w_j^2
+        \right]
+        + \gamma J
+    \]
+  </div>
+
+  <p>
+    This is a <strong>sum of independent quadratics</strong> in each \(w_j\).
+    Each quadratic \(G_j w + \frac{1}{2}(H_j + \lambda)w^2\) is minimized by
+    completing the square, giving the optimal leaf weight:
+  </p>
+
+  <div class="math-block">
+    \[
+      \boxed{w_j^* = -\frac{G_j}{H_j + \lambda},
+      \quad G_j = \sum_{i \in I_j} g_i, \quad H_j = \sum_{i \in I_j} h_i}
+    \]
+  </div>
+
+  <p>
+    The corresponding minimum value of the objective for a given tree structure is:
+  </p>
+
+  <div class="math-block">
+    \[
+      \tilde{\mathcal{L}}^{(t)*} = -\frac{1}{2} \sum_{j=1}^J \frac{G_j^2}{H_j + \lambda} + \gamma J
+    \]
+  </div>
+
+  <p>
+    This score is used to evaluate candidate splits. A split of leaf \(j\) into
+    children \(L\) and \(R\) is accepted if the gain is positive:
+  </p>
+
+  <div class="math-block">
+    \[
+      \text{Gain} = \frac{1}{2}\left[
+        \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L+G_R)^2}{H_L+H_R+\lambda}
+      \right] - \gamma
+    \]
+  </div>
+
+  <span class="section-anchor" id="boost-hyper"></span>
+  <h3>3.4 What the Hyperparameters Actually Do</h3>
+
+  <p>
+    Now that we've derived the math, the hyperparameters we set make immediate sense:
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Parameter</th><th>Our Value</th><th>What it controls mathematically</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>n_estimators=300</code></td><td>300</td><td>Number of trees \(T\); more trees = more bias reduction, but risk overfitting</td></tr>
+      <tr><td><code>learning_rate=0.05</code></td><td>0.05</td><td>Shrinks each tree's contribution: \(F_t = F_{t-1} + \eta f_t\). Small \(\eta\) requires more trees but generalizes better</td></tr>
+      <tr><td><code>max_depth=6</code></td><td>6</td><td>Limits tree complexity; controls the interaction order your model can capture</td></tr>
+      <tr><td><code>subsample=0.8</code></td><td>0.8</td><td>Stochastic boosting: each tree trained on 80% of rows sampled without replacement. Reduces variance</td></tr>
+      <tr><td><code>colsample_bytree=0.8</code></td><td>0.8</td><td>Each tree uses a random 80% of features. Like random forests' feature randomness</td></tr>
+      <tr><td><code>lambda</code></td><td>1 (default)</td><td>L2 penalty on leaf weights; shrinks \(w_j^*\) toward zero</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 4: FAIRNESS METRICS
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="fairness"></span>
+  <h2>4. Fairness Metrics</h2>
+
+  <p>
+    We have a binary classifier \(\hat{Y} = \mathbf{1}[f(\mathbf{x}) \geq 0.5]\),
+    a true label \(Y \in \{0, 1\}\), and a protected attribute \(A \in \{0, 1\}\)
+    (here: race, simplified to White vs. Black for the main comparison). The question
+    is: in what sense should \(\hat{Y}\) treat groups \(A=0\) and \(A=1\) equally?
+  </p>
+
+  <p>
+    This turns out to be a genuinely hard question. There are many
+    mathematically distinct definitions of fairness, and as we will see, they
+    are often mutually incompatible. The three definitions below are the most
+    widely used in the academic and regulatory literature.
+  </p>
+
+  <span class="section-anchor" id="dp"></span>
+  <h3>4.1 Demographic Parity (Statistical Parity)</h3>
+
+  <div class="callout definition">
+    <div class="callout-label">Definition</div>
+    <p style="margin:0">
+      A classifier satisfies <strong>demographic parity</strong> with respect to
+      protected attribute \(A\) if:
+      \[
+        P(\hat{Y} = 1 \mid A = 0) = P(\hat{Y} = 1 \mid A = 1)
+      \]
+      The <em>demographic parity difference</em> is
+      \(\Delta_{DP} = P(\hat{Y}=1 \mid A=1) - P(\hat{Y}=1 \mid A=0)\).
+    </p>
+  </div>
+
+  <p>
+    This is the most intuitive definition: the model should approve people at the
+    same rate across groups. It is what most people mean when they say "the model
+    treats everyone equally."
+  </p>
+
+  <p>
+    <strong>The problem:</strong> demographic parity is blind to whether the groups
+    actually have different outcome rates. If Group A has a true income-over-50k rate
+    of 44% and Group B has a rate of 34%, then a <em>perfect</em> classifier — one
+    that never makes mistakes — will violate demographic parity. Requiring parity
+    forces the model to either approve unqualified Group B members or deny qualified
+    Group A members. This is not obviously fair.
+  </p>
+
+  <p>
+    In our data: White base rate = 44.3%, Black base rate = 34.5%. The gap is 9.8
+    percentage points, and it exists in the <em>ground truth</em>, before any model
+    is applied. This reflects real economic inequality, which the model cannot fix.
+  </p>
+
+  <span class="section-anchor" id="eo"></span>
+  <h3>4.2 Equalized Odds</h3>
+
+  <div class="callout definition">
+    <div class="callout-label">Definition (Hardt, Price &amp; Srebro, 2016)</div>
+    <p style="margin:0">
+      A classifier satisfies <strong>equalized odds</strong> if, for both
+      \(y \in \{0, 1\}\):
+      \[
+        P(\hat{Y} = 1 \mid Y = y, A = 0) = P(\hat{Y} = 1 \mid Y = y, A = 1)
+      \]
+      This requires equal <em>true positive rates</em> (TPR) <em>and</em> equal
+      <em>false positive rates</em> (FPR) across groups.
+    </p>
+  </div>
+
+  <p>
+    Equalized odds conditions on the true label \(Y\). This is a crucial
+    distinction: rather than asking "do groups get approved at the same rate?" it
+    asks "given that you <em>actually</em> earn over $50k, do you have an equal
+    chance of the model recognizing that, regardless of your race?"
+  </p>
+
+  <p>
+    The <strong>TPR gap</strong> measures whether the model equally identifies
+    high-income individuals across groups. In our XGBoost results:
+    TPR(White) = 0.808, TPR(Black) = 0.686.
+    This means that among people who actually earn over $50k, Black individuals
+    are <em>significantly more likely to be misclassified as low-income</em>.
+    If this were a credit model, they'd be denied a loan they deserve.
+  </p>
+
+  <p>
+    The <strong>FPR gap</strong> measures whether the model equally approves
+    low-income individuals across groups. Here the gap is small (0.025), meaning
+    the model isn't particularly more likely to falsely approve White applicants
+    than Black applicants.
+  </p>
+
+  <p>
+    The <strong>equalized odds difference</strong> in our code is defined as:
+  </p>
+
+  <div class="math-block">
+    \[
+      \Delta_{EO} = \max\!\Big(|\text{TPR}_0 - \text{TPR}_1|,\; |\text{FPR}_0 - \text{FPR}_1|\Big)
+    \]
+  </div>
+
+  <p>
+    taking the max because you must satisfy both conditions simultaneously.
+  </p>
+
+  <span class="section-anchor" id="cal"></span>
+  <h3>4.3 Calibration</h3>
+
+  <div class="callout definition">
+    <div class="callout-label">Definition</div>
+    <p style="margin:0">
+      A score function \(s(\mathbf{x}) \in [0,1]\) is <strong>calibrated within
+      groups</strong> if for all \(p \in [0,1]\) and for all \(a \in \{0,1\}\):
+      \[
+        P\!\left(Y = 1 \mid s(\mathbf{x}) = p,\, A = a\right) = p
+      \]
+      The score means the same thing regardless of which group you belong to.
+    </p>
+  </div>
+
+  <p>
+    Calibration is about the <strong>meaning of the score</strong>, not the
+    decisions made from it. If a model assigns a score of 0.7 to an applicant,
+    calibration requires that applicant to have a 70% chance of earning over $50k
+    — whether they are White or Black.
+  </p>
+
+  <p>
+    In our code, we approximate calibration by bucketing scores into 5 equal-width
+    bins and measuring the average actual outcome rate within each bin, separately
+    by race. The calibration difference is the average absolute difference across bins.
+  </p>
+
+  <p>
+    Notice our results: XGBoost has a calibration difference of <strong>0.005</strong>
+    (near-perfect), while logistic regression has 0.022. XGBoost produces more
+    meaningful scores. But it has <em>worse</em> equalized odds. This is the
+    impossibility theorem showing up in our data, and we explore it next.
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 5: THE IMPOSSIBILITY THEOREM
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="impossible"></span>
+  <h2>5. The Impossibility Theorem</h2>
+
+  <span class="section-anchor" id="chould"></span>
+  <h3>5.1 The Chouldechova Theorem</h3>
+
+  <div class="callout theorem">
+    <div class="callout-label">Theorem (Chouldechova, 2017)</div>
+    <p style="margin:0">
+      Let \(\text{PPV}_a = P(Y=1 \mid \hat{Y}=1, A=a)\) (positive predictive value /
+      precision) and \(\text{FOR}_a = P(Y=1 \mid \hat{Y}=0, A=a)\) (false omission rate).
+      If the base rates differ, i.e. \(P(Y=1 \mid A=0) \neq P(Y=1 \mid A=1)\), then a
+      classifier <strong>cannot simultaneously satisfy</strong>:
+      <ol style="margin-top:0.6rem">
+        <li>Equal false positive rates: \(\text{FPR}_0 = \text{FPR}_1\)</li>
+        <li>Equal false negative rates (i.e., equal TPR): \(\text{FNR}_0 = \text{FNR}_1\)</li>
+        <li>Equal positive predictive values: \(\text{PPV}_0 = \text{PPV}_1\)</li>
+      </ol>
+      unless it achieves perfect accuracy.
+    </p>
+  </div>
+
+  <span class="section-anchor" id="proof-sec"></span>
+  <h3>5.2 Derivation from Bayes' Theorem</h3>
+
+  <p>
+    The proof is elegant and short. It follows from applying Bayes' theorem to
+    express PPV in terms of FPR, FNR, and the base rate.
+  </p>
+
+  <p>
+    Let \(\pi_a = P(Y=1 \mid A=a)\) be the base rate in group \(a\). Let
+    \(\text{FPR}_a = P(\hat{Y}=1 \mid Y=0, A=a)\) and
+    \(\text{FNR}_a = P(\hat{Y}=0 \mid Y=1, A=a) = 1 - \text{TPR}_a\).
+    The PPV (precision) in group \(a\) is:
+  </p>
+
+  <div class="math-block">
+    \[
+      \text{PPV}_a = P(Y=1 \mid \hat{Y}=1, A=a)
+      = \frac{P(\hat{Y}=1 \mid Y=1, A=a)\, P(Y=1 \mid A=a)}{P(\hat{Y}=1 \mid A=a)}
+    \]
+  </div>
+
+  <p>
+    The denominator \(P(\hat{Y}=1 \mid A=a)\) expands by the law of total probability:
+  </p>
+
+  <div class="math-block">
+    \[
+      P(\hat{Y}=1 \mid A=a)
+      = \text{TPR}_a \cdot \pi_a + \text{FPR}_a \cdot (1 - \pi_a)
+    \]
+  </div>
+
+  <p>
+    Substituting \(\text{TPR}_a = 1 - \text{FNR}_a\):
+  </p>
+
+  <div class="math-block">
+    \[
+      \text{PPV}_a
+      = \frac{(1 - \text{FNR}_a)\,\pi_a}{(1 - \text{FNR}_a)\,\pi_a + \text{FPR}_a\,(1 - \pi_a)}
+    \]
+  </div>
+
+  <div class="proof">
+    <div class="proof-label">Proof of Impossibility</div>
+    <p>
+      Suppose the classifier achieves equal FPR (\(\text{FPR}_0 = \text{FPR}_1 =: p\))
+      and equal FNR (\(\text{FNR}_0 = \text{FNR}_1 =: q\)). Then for group \(a\):
+    </p>
+    <div class="math-block" style="background:transparent; border:none; padding: 0.5rem 0;">
+      \[
+        \text{PPV}_a = \frac{(1-q)\,\pi_a}{(1-q)\,\pi_a + p\,(1-\pi_a)}
+      \]
+    </div>
+    <p>
+      For \(\text{PPV}_0 = \text{PPV}_1\) we need:
+    </p>
+    <div class="math-block" style="background:transparent; border:none; padding: 0.5rem 0;">
+      \[
+        \frac{(1-q)\,\pi_0}{(1-q)\,\pi_0 + p\,(1-\pi_0)}
+        = \frac{(1-q)\,\pi_1}{(1-q)\,\pi_1 + p\,(1-\pi_1)}
+      \]
+    </div>
+    <p>
+      Cross-multiplying and canceling \((1-q)\):
+    </p>
+    <div class="math-block" style="background:transparent; border:none; padding: 0.5rem 0;">
+      \[
+        \pi_0\Big[(1-q)\,\pi_1 + p(1-\pi_1)\Big] = \pi_1\Big[(1-q)\,\pi_0 + p(1-\pi_0)\Big]
+      \]
+      \[
+        \pi_0\, p(1-\pi_1) = \pi_1\, p(1-\pi_0)
+      \]
+      \[
+        p\,(\pi_0 - \pi_1) = 0
+      \]
+    </div>
+    <p>
+      This holds if and only if \(p = 0\) (perfect FPR, i.e. no false positives)
+      or \(\pi_0 = \pi_1\) (equal base rates). Since we assumed base rates differ,
+      equal PPV requires \(p = 0\). By a symmetric argument, \(q = 0\) as well.
+      But \(p = q = 0\) means the classifier makes no errors — perfect accuracy.
+    </p>
+    <div class="qed">□</div>
+  </div>
+
+  <div class="callout warning">
+    <div class="callout-label">⚠ What this means practically</div>
+    <p style="margin:0">
+      In our data, White base rate = 44.3%, Black base rate = 34.5%. The gap is
+      real. Therefore, any classifier (no matter how good) that correctly identifies
+      high-income individuals at equal rates across groups (equalized odds)
+      <em>must</em> assign different predictive meanings to the same score across groups
+      (violating calibration / PPV parity). And vice versa. There is no free lunch.
+      Policy choices about which fairness criterion to prioritize are unavoidable —
+      and they are fundamentally value judgments, not technical ones.
+    </p>
+  </div>
+
+  <h3>The COMPAS Controversy</h3>
+
+  <p>
+    This theorem is not abstract. In 2016, ProPublica published an analysis of
+    COMPAS, a recidivism-prediction algorithm used in U.S. courts for bail and
+    sentencing decisions. They found that Black defendants were roughly twice as
+    likely as White defendants to be falsely flagged as high-risk (FPR disparity).
+    Northpointe, the company behind COMPAS, responded that the algorithm was
+    <em>calibrated</em> — a score of 7 meant the same recidivism probability for
+    Black and White defendants. Both were right. The Chouldechova theorem guarantees
+    that given different base rates (Black defendants do have higher observed
+    recidivism rates in the data, themselves a product of systemic discrimination
+    in policing and prosecution), you cannot have both.
+  </p>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       SECTION 6: OUR RESULTS
+  ═══════════════════════════════════════════════════════════════════════════ -->
+  <span class="section-anchor" id="results"></span>
+  <h2>6. Our Results</h2>
+
+  <span class="section-anchor" id="interp"></span>
+  <h3>6.1 Interpreting the Numbers</h3>
+
+  <div class="result-grid">
+    <div class="result-card ok">
+      <div class="value">0.907</div>
+      <div class="label">XGBoost AUC</div>
+    </div>
+    <div class="result-card">
+      <div class="value">0.861</div>
+      <div class="label">Logistic Reg AUC</div>
+    </div>
+    <div class="result-card warn">
+      <div class="value">+0.122</div>
+      <div class="label">XGB Demographic<br>Parity Gap</div>
+    </div>
+    <div class="result-card warn">
+      <div class="value">+0.122</div>
+      <div class="label">XGB Equalized<br>Odds Diff</div>
+    </div>
+    <div class="result-card ok">
+      <div class="value">0.005</div>
+      <div class="label">XGB Calibration<br>Diff</div>
+    </div>
+    <div class="result-card">
+      <div class="value">0.022</div>
+      <div class="label">LR Calibration<br>Diff</div>
+    </div>
+  </div>
+
+  <h4>The AUC Gap</h4>
+  <p>
+    The AUC (Area Under the ROC Curve) measures the probability that the model
+    ranks a random positive example above a random negative example. It is
+    threshold-free — it doesn't depend on where we set the 0.5 cutoff. XGBoost
+    achieves 0.907 vs. logistic regression's 0.861. The gap of 4.6 percentage
+    points represents a meaningful improvement. In credit decision contexts,
+    differences of even 1–2 AUC points translate to significant financial impact.
+  </p>
+
+  <h4>Why XGBoost Has Worse Fairness Gaps</h4>
+  <p>
+    XGBoost is a more powerful model — it captures nonlinear interactions that
+    logistic regression cannot. This means it "finds" more signal in the data,
+    including signal that is correlated with race. Recall that <code>OCCP</code>
+    (occupation) and <code>POBP</code> (place of birth) are both highly predictive
+    of income <em>and</em> correlated with race due to historical occupational
+    segregation and immigration patterns. A more powerful model extracts more of
+    this correlated signal, producing sharper predictions that are also more
+    racially disparate.
+  </p>
+
+  <h4>The Calibration Inversion</h4>
+  <p>
+    Logistic regression has <em>worse</em> calibration (0.022) but <em>better</em>
+    equalized odds (0.087 vs. 0.122). This is precisely the impossibility theorem
+    in action. Logistic regression's relative inflexibility means it cannot fully
+    separate the groups, so it produces more equalized error rates — but at the cost
+    of being less well-calibrated. XGBoost's scores are highly meaningful (calibration
+    diff = 0.005), but meaningful scores that accurately reflect real economic
+    inequality produce large approval gaps.
+  </p>
+
+  <h4>A Note on What's Causing the Gap</h4>
+  <p>
+    The critical question for any fairness intervention is: how much of the model's
+    disparity is explained by the features, and how much is unexplained? In our case,
+    we include race as a feature — so some disparity comes from the model directly
+    using race. But even if we removed race, occupation, education, and hours worked
+    are all correlated with race and would still produce disparate outcomes. The
+    SHAP analysis (next step) will decompose this precisely.
+  </p>
+
+  <span class="section-anchor" id="next"></span>
+  <h3>6.2 What Comes Next</h3>
+
+  <p>
+    The natural next steps for this project are:
+  </p>
+
+  <ol>
+    <li>
+      <strong>SHAP analysis:</strong> Decompose the model's predictions feature by
+      feature. Which features drive the racial disparity? Is it occupation? Education?
+      Hours worked? This tells you whether the disparity is "explained" by legitimate
+      factors or not.
+    </li>
+    <li>
+      <strong>Fairness interventions:</strong> Apply three strategies — pre-processing
+      (reweighting training data), in-processing (adversarial debiasing), and
+      post-processing (group-specific threshold optimization). For each, plot the
+      Pareto frontier of accuracy vs. equalized odds violation.
+    </li>
+    <li>
+      <strong>Threshold optimization (post-processing):</strong> Given XGBoost's
+      well-calibrated scores, the cleanest intervention is to set different classification
+      thresholds \(\tau_0, \tau_1\) for each group to equalize TPR. The optimal thresholds
+      can be found analytically using the ROC curves, and the resulting accuracy loss
+      is the "price of fairness."
+    </li>
+    <li>
+      <strong>HMDA application:</strong> Repeat this entire analysis on the Home
+      Mortgage Disclosure Act data with actual loan approval decisions. The stakes are
+      real — approval decisions directly affect wealth accumulation — and the
+      regulatory context (Equal Credit Opportunity Act, Fair Housing Act) makes the
+      fairness definitions legally significant, not just academic.
+    </li>
+  </ol>
+
+  <div class="callout intuition">
+    <div class="callout-label">The Big Picture</div>
+    <p style="margin:0">
+      What makes this research interesting — and genuinely hard — is that the
+      impossibility theorem tells us there is no purely technical solution. Choosing
+      which fairness criterion to optimize is a policy decision about values: do you
+      prioritize equal treatment (demographic parity), equal errors (equalized odds),
+      or equal meaning of scores (calibration)? Each choice has victims. Good
+      empirical work doesn't pretend otherwise — it quantifies the trade-offs precisely
+      so that decision-makers can make informed choices.
+    </p>
+  </div>
+
+  <hr>
+
+  <h3>References</h3>
+  <ul style="font-size:0.9rem; color: var(--muted);">
+    <li>Chen, T. &amp; Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. <em>KDD</em>.</li>
+    <li>Chouldechova, A. (2017). Fair prediction with disparate impact. <em>Big Data</em>, 5(2).</li>
+    <li>Ding, F., Hardt, M., Miller, J., &amp; Schmidt, L. (2021). Retiring Adult: New Datasets for Fair Machine Learning. <em>NeurIPS</em>.</li>
+    <li>Friedman, J. H. (2001). Greedy function approximation: a gradient boosting machine. <em>Annals of Statistics</em>.</li>
+    <li>Hardt, M., Price, E., &amp; Srebro, N. (2016). Equality of opportunity in supervised learning. <em>NeurIPS</em>.</li>
+    <li>Schapire, R. (1990). The strength of weak learnability. <em>Machine Learning</em>.</li>
+  </ul>
+
+</main>
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const anchors = document.querySelectorAll('.section-anchor');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const id = entry.target.id;
+        const link = document.querySelector(`nav a[href="#${id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  anchors.forEach(a => observer.observe(a));
+</script>
+
+</body>
+</html>

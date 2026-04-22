@@ -1,0 +1,484 @@
+{
+  "wildfires": {
+    "label": "Wildfires",
+    "status": "ok",
+    "nonzero_months": 91.0,
+    "trend_coef": -0.0050357840906261695,
+    "trend_se": 0.0007246406059415386,
+    "trend_z": -6.949353996086217,
+    "trend_pval": 3.6696268272245235e-12,
+    "trend_significant": "True",
+    "annual_multiplier": 0.9413602181498029,
+    "annual_mult_lo": 0.9254520518546286,
+    "annual_mult_hi": 0.9575418397302808,
+    "dispersion": 13.369779915411668,
+    "aic": 1470.8146676056685,
+    "mean_monthly_rate": 26.552083333346133,
+    "stationarity": {
+      "mann_kendall_tau": -0.118,
+      "mann_kendall_pval": 0.0919,
+      "mann_kendall_dir": "none detected",
+      "glm_trend_pval": 0.0,
+      "glm_annual_mult": 0.941,
+      "yearly_cv": 0.477,
+      "overdispersion": 13.37,
+      "verdict": "TREND (GLM only; MK disagrees)"
+    },
+    "cv_timeseries": {
+      "status": "ok",
+      "n_splits": 5,
+      "test_size": 3,
+      "with_trend": {
+        "mean_skill": -1.322,
+        "mean_mae": 33.733,
+        "mean_deviance": 96.991,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2017-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 16.776,
+            "null_dev": 107.421,
+            "skill": 0.844,
+            "mae": 5.764
+          },
+          {
+            "fold": 2,
+            "cutoff": "2019-05",
+            "train_months": 41,
+            "test_months": 3,
+            "deviance": 230.241,
+            "null_dev": 46.492,
+            "skill": -3.952,
+            "mae": 88.066
+          },
+          {
+            "fold": 3,
+            "cutoff": "2020-10",
+            "train_months": 58,
+            "test_months": 3,
+            "deviance": 14.293,
+            "null_dev": 37.417,
+            "skill": 0.618,
+            "mae": 5.231
+          },
+          {
+            "fold": 4,
+            "cutoff": "2022-04",
+            "train_months": 76,
+            "test_months": 3,
+            "deviance": 212.895,
+            "null_dev": 32.449,
+            "skill": -5.0,
+            "mae": 65.892
+          },
+          {
+            "fold": 5,
+            "cutoff": "2023-09",
+            "train_months": 93,
+            "test_months": 3,
+            "deviance": 10.75,
+            "null_dev": 87.923,
+            "skill": 0.878,
+            "mae": 3.713
+          }
+        ]
+      },
+      "without_trend": {
+        "mean_skill": -0.073,
+        "mean_mae": 17.982,
+        "mean_deviance": 41.082,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2017-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 1.039,
+            "null_dev": 107.421,
+            "skill": 0.99,
+            "mae": 1.0
+          },
+          {
+            "fold": 2,
+            "cutoff": "2019-05",
+            "train_months": 41,
+            "test_months": 3,
+            "deviance": 57.851,
+            "null_dev": 46.492,
+            "skill": -0.244,
+            "mae": 36.222
+          },
+          {
+            "fold": 3,
+            "cutoff": "2020-10",
+            "train_months": 58,
+            "test_months": 3,
+            "deviance": 22.448,
+            "null_dev": 37.417,
+            "skill": 0.4,
+            "mae": 6.767
+          },
+          {
+            "fold": 4,
+            "cutoff": "2022-04",
+            "train_months": 76,
+            "test_months": 3,
+            "deviance": 107.931,
+            "null_dev": 32.449,
+            "skill": -2.326,
+            "mae": 41.111
+          },
+          {
+            "fold": 5,
+            "cutoff": "2023-09",
+            "train_months": 93,
+            "test_months": 3,
+            "deviance": 16.141,
+            "null_dev": 87.923,
+            "skill": 0.816,
+            "mae": 4.81
+          }
+        ]
+      },
+      "trend_improves_oos": false,
+      "skill_delta": -1.249,
+      "trend_stability": {
+        "coefs": [
+          0.0545,
+          0.0208,
+          0.0068,
+          0.0082,
+          -0.0048
+        ],
+        "mean": 0.0171,
+        "std": 0.0204,
+        "cv_pct": 119.2
+      }
+    }
+  },
+  "severeStorms": {
+    "label": "Severe Storms",
+    "status": "ok",
+    "nonzero_months": 124.0,
+    "trend_coef": -0.0009590181901674271,
+    "trend_se": 0.0009222762689560937,
+    "trend_z": -1.0398383027386369,
+    "trend_pval": 0.29841503055755325,
+    "trend_significant": "False",
+    "annual_multiplier": 0.9885577479681742,
+    "annual_mult_lo": 0.9673449201970947,
+    "annual_mult_hi": 1.0102357501074135,
+    "dispersion": 0.9176748568878836,
+    "aic": 589.0705114845985,
+    "mean_monthly_rate": 7.604838709681627,
+    "stationarity": {
+      "mann_kendall_tau": -0.0362,
+      "mann_kendall_pval": 0.5651,
+      "mann_kendall_dir": "none detected",
+      "glm_trend_pval": 0.2984,
+      "glm_annual_mult": 0.989,
+      "yearly_cv": 0.262,
+      "overdispersion": 0.92,
+      "verdict": "STATIONARY"
+    },
+    "cv_timeseries": {
+      "status": "ok",
+      "n_splits": 5,
+      "test_size": 3,
+      "with_trend": {
+        "mean_skill": 0.29,
+        "mean_mae": 1.677,
+        "mean_deviance": 2.63,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2017-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 5.834,
+            "null_dev": 2.585,
+            "skill": -1.257,
+            "mae": 2.923
+          },
+          {
+            "fold": 2,
+            "cutoff": "2019-12",
+            "train_months": 48,
+            "test_months": 3,
+            "deviance": 4.803,
+            "null_dev": 6.732,
+            "skill": 0.287,
+            "mae": 2.651
+          },
+          {
+            "fold": 3,
+            "cutoff": "2021-12",
+            "train_months": 72,
+            "test_months": 3,
+            "deviance": 0.652,
+            "null_dev": 2.041,
+            "skill": 0.68,
+            "mae": 0.843
+          },
+          {
+            "fold": 4,
+            "cutoff": "2024-01",
+            "train_months": 97,
+            "test_months": 3,
+            "deviance": 1.577,
+            "null_dev": 8.102,
+            "skill": 0.805,
+            "mae": 1.322
+          },
+          {
+            "fold": 5,
+            "cutoff": "2026-01",
+            "train_months": 121,
+            "test_months": 3,
+            "deviance": 0.282,
+            "null_dev": 4.272,
+            "skill": 0.934,
+            "mae": 0.645
+          }
+        ]
+      },
+      "without_trend": {
+        "mean_skill": 0.357,
+        "mean_mae": 1.678,
+        "mean_deviance": 2.496,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2017-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 4.867,
+            "null_dev": 2.585,
+            "skill": -0.883,
+            "mae": 2.833
+          },
+          {
+            "fold": 2,
+            "cutoff": "2019-12",
+            "train_months": 48,
+            "test_months": 3,
+            "deviance": 4.802,
+            "null_dev": 6.732,
+            "skill": 0.287,
+            "mae": 2.667
+          },
+          {
+            "fold": 3,
+            "cutoff": "2021-12",
+            "train_months": 72,
+            "test_months": 3,
+            "deviance": 0.637,
+            "null_dev": 2.041,
+            "skill": 0.688,
+            "mae": 0.833
+          },
+          {
+            "fold": 4,
+            "cutoff": "2024-01",
+            "train_months": 97,
+            "test_months": 3,
+            "deviance": 1.823,
+            "null_dev": 8.102,
+            "skill": 0.775,
+            "mae": 1.458
+          },
+          {
+            "fold": 5,
+            "cutoff": "2026-01",
+            "train_months": 121,
+            "test_months": 3,
+            "deviance": 0.35,
+            "null_dev": 4.272,
+            "skill": 0.918,
+            "mae": 0.6
+          }
+        ]
+      },
+      "trend_improves_oos": false,
+      "skill_delta": -0.067,
+      "trend_stability": {
+        "coefs": [
+          -0.0044,
+          -0.0003,
+          -0.0001,
+          -0.0023,
+          -0.001
+        ],
+        "mean": -0.0016,
+        "std": 0.0016,
+        "cv_pct": 99.0
+      }
+    }
+  },
+  "volcanoes": {
+    "label": "Volcanoes",
+    "status": "ok",
+    "nonzero_months": 81.0,
+    "trend_coef": -0.004891148852646443,
+    "trend_se": 0.0021116204387580757,
+    "trend_z": -2.316301150941271,
+    "trend_pval": 0.020541831549307412,
+    "trend_significant": "True",
+    "annual_multiplier": 0.9429954831510753,
+    "annual_mult_lo": 0.8973053171703917,
+    "annual_mult_hi": 0.991012160774335,
+    "dispersion": 1.4241329518886756,
+    "aic": 407.732904085864,
+    "mean_monthly_rate": 4.034090909103444,
+    "stationarity": {
+      "mann_kendall_tau": -0.1436,
+      "mann_kendall_pval": 0.0598,
+      "mann_kendall_dir": "none detected",
+      "glm_trend_pval": 0.0205,
+      "glm_annual_mult": 0.943,
+      "yearly_cv": 0.419,
+      "overdispersion": 1.42,
+      "verdict": "TREND (GLM only; MK disagrees)"
+    },
+    "cv_timeseries": {
+      "status": "ok",
+      "n_splits": 5,
+      "test_size": 3,
+      "with_trend": {
+        "mean_skill": 0.315,
+        "mean_mae": 2.264,
+        "mean_deviance": 9.163,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2020-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 0.399,
+            "null_dev": 1.331,
+            "skill": 0.7,
+            "mae": 0.767
+          },
+          {
+            "fold": 2,
+            "cutoff": "2022-03",
+            "train_months": 39,
+            "test_months": 3,
+            "deviance": 0.819,
+            "null_dev": 1.846,
+            "skill": 0.556,
+            "mae": 0.967
+          },
+          {
+            "fold": 3,
+            "cutoff": "2023-06",
+            "train_months": 54,
+            "test_months": 3,
+            "deviance": 22.617,
+            "null_dev": 18.161,
+            "skill": -0.245,
+            "mae": 5.184
+          },
+          {
+            "fold": 4,
+            "cutoff": "2024-10",
+            "train_months": 70,
+            "test_months": 3,
+            "deviance": 1.363,
+            "null_dev": 2.227,
+            "skill": 0.388,
+            "mae": 0.967
+          },
+          {
+            "fold": 5,
+            "cutoff": "2026-01",
+            "train_months": 85,
+            "test_months": 3,
+            "deviance": 20.615,
+            "null_dev": 25.059,
+            "skill": 0.177,
+            "mae": 3.436
+          }
+        ]
+      },
+      "without_trend": {
+        "mean_skill": 0.213,
+        "mean_mae": 2.417,
+        "mean_deviance": 9.928,
+        "folds": [
+          {
+            "fold": 1,
+            "cutoff": "2020-12",
+            "train_months": 24,
+            "test_months": 3,
+            "deviance": 0.478,
+            "null_dev": 1.331,
+            "skill": 0.641,
+            "mae": 0.833
+          },
+          {
+            "fold": 2,
+            "cutoff": "2022-03",
+            "train_months": 39,
+            "test_months": 3,
+            "deviance": 1.487,
+            "null_dev": 1.846,
+            "skill": 0.194,
+            "mae": 1.222
+          },
+          {
+            "fold": 3,
+            "cutoff": "2023-06",
+            "train_months": 54,
+            "test_months": 3,
+            "deviance": 22.675,
+            "null_dev": 18.161,
+            "skill": -0.249,
+            "mae": 5.167
+          },
+          {
+            "fold": 4,
+            "cutoff": "2024-10",
+            "train_months": 70,
+            "test_months": 3,
+            "deviance": 1.285,
+            "null_dev": 2.227,
+            "skill": 0.423,
+            "mae": 0.911
+          },
+          {
+            "fold": 5,
+            "cutoff": "2026-01",
+            "train_months": 85,
+            "test_months": 3,
+            "deviance": 23.714,
+            "null_dev": 25.059,
+            "skill": 0.054,
+            "mae": 3.952
+          }
+        ]
+      },
+      "trend_improves_oos": true,
+      "skill_delta": 0.102,
+      "trend_stability": {
+        "coefs": [
+          -0.0017,
+          0.0069,
+          0.0032,
+          0.0003,
+          -0.0029
+        ],
+        "mean": 0.0012,
+        "std": 0.0035,
+        "cv_pct": 300.4
+      }
+    }
+  },
+  "floods": {
+    "label": "Floods",
+    "status": "insufficient_data",
+    "nonzero_months": 12.0
+  }
+}

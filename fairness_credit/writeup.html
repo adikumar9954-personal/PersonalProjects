@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Climate Risk, Mortgage Markets & Racial Equity</title>
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']],
+    tags: 'ams'
+  }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+  :root {
+    --bg:      #0f1117;
+    --surface: #1a1d27;
+    --surf2:   #21263a;
+    --border:  #2e3350;
+    --text:    #e2e8f0;
+    --muted:   #8892a4;
+    --blue:    #6c8eff;
+    --red:     #ff7b6b;
+    --green:   #52d9a0;
+    --yellow:  #f5c842;
+    --purple:  #a78bfa;
+    --accent:  #6c8eff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,17,23,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(8px);
+    padding: 0 2rem;
+  }
+  nav ul { list-style: none; display: flex; flex-wrap: wrap; max-width: 1100px; margin: 0 auto; }
+  nav ul li a {
+    display: block; padding: 1rem 0.85rem;
+    color: var(--muted); text-decoration: none;
+    font-family: system-ui, sans-serif; font-size: 0.76rem;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  nav ul li a:hover { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* Layout */
+  .page { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 5rem 2rem 3rem; border-bottom: 1px solid var(--border); }
+  .hero .label {
+    font-family: system-ui, sans-serif; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--accent); margin-bottom: 1.2rem;
+  }
+  .hero h1 { font-size: 2.4rem; line-height: 1.25; font-weight: 700; margin-bottom: 1rem; }
+  .hero .subtitle { font-size: 1.1rem; color: var(--muted); max-width: 640px; margin: 0 auto 2rem; }
+  .hero .meta {
+    font-family: system-ui, sans-serif; font-size: 0.82rem;
+    color: var(--muted); display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+  }
+
+  /* Typography */
+  h2 { font-size: 1.65rem; margin: 3.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.2rem; margin: 2rem 0 0.6rem; color: var(--blue); }
+  h4 { font-size: 0.95rem; margin: 1.5rem 0 0.4rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: system-ui, sans-serif; }
+  p  { margin-bottom: 1.2rem; }
+  ol, ul { margin: 0.8rem 0 1.2rem 2rem; }
+  li { margin-bottom: 0.5rem; }
+  a  { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code {
+    background: var(--surf2); border: 1px solid var(--border);
+    border-radius: 3px; padding: 0.1em 0.4em;
+    font-family: 'Courier New', monospace; font-size: 0.88em; color: var(--green);
+  }
+
+  /* Callouts */
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--surface);
+    border-radius: 0 6px 6px 0; padding: 1rem 1.4rem; margin: 1.8rem 0;
+  }
+  .callout.result  { border-color: var(--green); }
+  .callout.warning { border-color: var(--yellow); }
+  .callout.theory  { border-color: var(--purple); }
+  .callout.cite    { border-color: var(--muted); }
+  .callout .ct {
+    font-family: system-ui, sans-serif; font-size: 0.72rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); margin-bottom: 0.5rem; font-weight: 700;
+  }
+  .callout.result  .ct { color: var(--green); }
+  .callout.warning .ct { color: var(--yellow); }
+  .callout.theory  .ct { color: var(--purple); }
+  .callout.cite    .ct { color: var(--muted); }
+
+  /* Tables */
+  .tw { overflow-x: auto; margin: 1.8rem 0; }
+  table { width: 100%; border-collapse: collapse; font-family: system-ui, sans-serif; font-size: 0.88rem; }
+  th {
+    background: var(--surf2); color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.05em; font-size: 0.73rem; padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border); text-align: left;
+  }
+  td { padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface); }
+  .num { text-align: right; font-family: 'Courier New', monospace; }
+  .sig { color: var(--green); font-weight: 700; }
+  .neg { color: var(--red); }
+  .pos { color: var(--green); }
+  .hl td { background: rgba(108,142,255,0.07); }
+
+  /* Figures */
+  figure { margin: 2.5rem 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  figure img { width: 100%; display: block; }
+  figcaption { padding: 0.9rem 1.2rem; font-family: system-ui, sans-serif; font-size: 0.82rem; color: var(--muted); border-top: 1px solid var(--border); }
+  figcaption strong { color: var(--text); }
+
+  /* Result cards */
+  .rg { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 1rem; margin: 1.8rem 0; }
+  .rc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; text-align: center; }
+  .rc .val { font-size: 2rem; font-weight: 700; font-family: system-ui, sans-serif; line-height: 1; }
+  .rc .val.blue   { color: var(--blue); }
+  .rc .val.green  { color: var(--green); }
+  .rc .val.red    { color: var(--red); }
+  .rc .val.yellow { color: var(--yellow); }
+  .rc .lbl { font-family: system-ui, sans-serif; font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* Equation block */
+  .eq { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.2rem 1.5rem; margin: 1.5rem 0; overflow-x: auto; }
+
+  /* Abstract */
+  .abstract { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.8rem 2rem; margin: 2.5rem 0; }
+  .abstract h4 { text-align: center; margin-bottom: 0.8rem; font-size: 0.8rem; }
+  .abstract p { font-size: 0.95rem; margin-bottom: 0; }
+
+  /* Divider */
+  .div { text-align: center; color: var(--border); margin: 3rem 0; font-size: 1.5rem; letter-spacing: 0.5rem; }
+
+  /* References */
+  .references p { font-size: 0.88rem; margin-bottom: 0.7rem; padding-left: 2em; text-indent: -2em; }
+</style>
+</head>
+<body>
+
+<nav>
+  <ul>
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#data">Data</a></li>
+    <li><a href="#proxy">Proxy Discrimination</a></li>
+    <li><a href="#causal">Methods</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#synthesis">Synthesis</a></li>
+    <li><a href="#literature">Literature</a></li>
+    <li><a href="#limits">Limitations</a></li>
+    <li><a href="#refs">References</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="label">Research Report &nbsp;&middot;&nbsp; Financial Mathematics &amp; Statistics</div>
+  <h1>Climate Risk, Mortgage Markets,<br>and Racial Equity</h1>
+  <p class="subtitle">
+    A multi-method empirical investigation of racial disparities in mortgage credit
+    access across flood-exposed housing markets in Florida, combining machine learning
+    fairness audits, causal inference, and natural experiments.
+  </p>
+  <div class="meta">
+    <span>Florida HMDA 2018&ndash;2022</span>
+    <span>ACS 2018 California</span>
+    <span>Hurricane Ian (DR-4673)</span>
+    <span>FEMA NFHL</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- Abstract -->
+<div class="abstract" id="abstract">
+  <h4>Abstract</h4>
+  <p>
+    We document three interacting forces in the U.S. mortgage market: algorithmic proxy
+    discrimination, persistent lender racial premiums amplified by flood zone exposure,
+    and acute credit access collapse following a major hurricane. Using ACS microdata and
+    XGBoost with 5-fold cross-validation, we show that removing race as a feature leaves
+    approximately <strong>80%</strong> of the White&ndash;Black prediction gap intact
+    through occupational, educational, and relationship proxies &mdash; consistent with
+    Chouldechova&rsquo;s (2017) impossibility theorem. Using Florida HMDA data
+    (2018&ndash;2022), Double/Debiased Machine Learning estimates a <strong>+6.8 pp</strong>
+    racial rate-spread premium that widens by <strong>+2.7 pp</strong> inside FEMA Special
+    Flood Hazard Areas. A difference-in-differences design exploiting Hurricane Ian
+    (September 2022) as a natural experiment finds a <strong>7.5 pp</strong>
+    White&ndash;Black differential in post-storm rate spreads, rising to a net
+    <strong>24.4 pp</strong> effect in direct-landfall counties &mdash; driven largely
+    by a near-complete collapse of Black mortgage origination. Together these findings
+    suggest that climate shocks compound pre-existing racial credit disparities through
+    both the price and access channels, complementing the housing-market evidence of
+    Box-Couillard (2024).
+  </p>
+</div>
+
+
+<!-- 1. Introduction -->
+<h2 id="intro">1. Introduction</h2>
+
+<p>
+  Three stylized facts motivate this project. First, persons of color are more likely
+  than white Americans to live in high flood-risk areas, both because of historical
+  redlining and because housing market discrimination makes safe housing more expensive
+  for minority buyers (Box-Couillard, 2024). Second, African American borrowers pay
+  significantly more than observably similar white borrowers for mortgage credit, a
+  premium that persists after controlling for income, loan-to-value ratio, and
+  debt-to-income ratio. Third, climate change is making extreme weather events more
+  frequent and more severe, and the distributional consequences are concentrated among
+  already-vulnerable populations.
+</p>
+
+<p>
+  This project asks: <em>do climate risks amplify racial disparities in the mortgage
+  credit market, and if so through what mechanisms?</em> We approach the question from
+  three complementary angles:
+</p>
+
+<ol>
+  <li>
+    <strong>Algorithmic fairness</strong> &mdash; can a machine learning income classifier
+    reproduce racial disparities even without an explicit race feature?
+  </li>
+  <li>
+    <strong>Causal estimation</strong> &mdash; what is the race effect on mortgage rate
+    spreads after partialling out confounders, and does it vary by flood zone?
+  </li>
+  <li>
+    <strong>Natural experiment</strong> &mdash; does an acute climate shock (Hurricane Ian)
+    differentially restrict Black credit access in affected counties?
+  </li>
+</ol>
+
+<div class="callout result">
+  <div class="ct">Summary of findings</div>
+  Across all three approaches the evidence converges: racial disparities in the mortgage
+  market are large, robust to controls, amplified inside flood zones, and dramatically
+  worsened by a direct hurricane hit. The dominant mechanism in the post-shock setting is
+  not higher prices for Black borrowers but a collapse in origination volume &mdash; the
+  Black mortgage market in Tier-1 Ian counties effectively froze.
+</div>
+
+
+<!-- 2. Data -->
+<h2 id="data">2. Data</h2>
+
+<h3>2.1 ACS Microdata &mdash; Income Classification</h3>
+<p>
+  The fairness audit uses the <strong>American Community Survey (ACS) 2018 1-Year
+  person-level</strong> file for California, accessed via the <code>folktables</code>
+  library (Ding et al., 2021). The task is binary income classification: predict whether
+  annual income exceeds $50,000. The feature set mirrors variables historically used in
+  automated underwriting: age, class of worker, education, marital status, occupation,
+  place of birth, relationship to household head, usual hours worked, sex, and race.
+</p>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Group</th><th class="num">N (approx.)</th><th class="num">Base rate (income &gt; $50k)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>White (non-Hispanic)</td><td class="num">~100,000</td><td class="num">~47%</td></tr>
+      <tr><td>Black (non-Hispanic)</td><td class="num">~8,000</td><td class="num">~31%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout theory">
+  <div class="ct">Why base-rate differences matter</div>
+  The Chouldechova (2017) impossibility theorem shows that when two groups have different
+  base rates, no classifier can simultaneously satisfy demographic parity, equalized odds,
+  and calibration. The 16 pp base-rate gap between White and Black Californians here
+  guarantees that any well-calibrated model will exhibit apparent unfairness on at least
+  one other fairness metric.
+</div>
+
+<h3>2.2 Florida HMDA Mortgage Data</h3>
+<p>
+  The causal analysis uses <strong>Home Mortgage Disclosure Act (HMDA)</strong>
+  public loan-level data for Florida, years 2018&ndash;2022. HMDA requires lenders
+  to report applicant race/ethnicity, loan amount, purpose, property type, action taken,
+  and the <strong>rate spread</strong> (APR minus the average prime offer rate, reported
+  for higher-priced loans). After filtering to first-lien conventional single-family
+  purchase mortgages with reported rate spreads, we retain approximately
+  <strong>959,978 loans</strong> across 133 Florida counties.
+</p>
+
+<h3>2.3 FEMA National Flood Hazard Layer</h3>
+<p>
+  Flood zone status is assigned at the census-tract level using FEMA&rsquo;s National
+  Flood Hazard Layer (NFHL). Special Flood Hazard Areas (SFHAs) are 100-year flood zones
+  (1% annual probability) where federally-backed mortgages require flood insurance.
+  The NFHL is the same dataset used by Box-Couillard (2024) and Hino &amp; Burke (2021).
+</p>
+
+<h3>2.4 Hurricane Ian Treatment Assignment</h3>
+<p>
+  Hurricane Ian made landfall near Fort Myers Beach, Lee County, on September 28, 2022,
+  as a Category 4 storm (150 mph sustained winds). FEMA declared disaster DR-4673.
+  Treatment intensity is assigned by county:
+</p>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Tier</th><th>Counties</th><th class="num">Loans</th><th>Rationale</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Tier 1</strong> (direct hit)</td>
+        <td>Lee, Charlotte, Sarasota</td>
+        <td class="num">133,703</td>
+        <td>Landfall path; catastrophic damage</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 2</strong> (heavy impact)</td>
+        <td>Collier, DeSoto, Hillsborough, Manatee, Polk + others</td>
+        <td class="num">233,292</td>
+        <td>Major FEMA-declared impact counties</td>
+      </tr>
+      <tr>
+        <td><strong>Control</strong></td>
+        <td>Miami-Dade, Broward, Palm Beach, Duval + others</td>
+        <td class="num">592,983</td>
+        <td>South/north Florida; minimal Ian damage</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- 3. Proxy Discrimination -->
+<h2 id="proxy">3. Proxy Discrimination Analysis</h2>
+
+<h3>3.1 Model and Cross-Validation</h3>
+<p>
+  We train an <strong>XGBoost</strong> classifier (gradient-boosted decision trees) on
+  the ACS income task using <strong>5-fold stratified cross-validation</strong>. Each
+  fold trains on 80% of the data with an inner 10% sub-split used exclusively for
+  <strong>early stopping</strong> (patience = 20 rounds), keeping the outer test fold
+  completely untouched during training. Class imbalance is corrected by setting
+  <code>scale_pos_weight = neg / pos</code>, calibrating the predicted probabilities
+  toward the true base rates.
+</p>
+
+<div class="callout">
+  <div class="ct">Why 5-fold CV changes the inference</div>
+  Fairness metrics from a single train/test split are point estimates susceptible to
+  sampling noise. 5-fold CV yields mean &plusmn; standard deviation across folds,
+  turning the proxy discrimination finding into a robust statistical claim. The
+  &ldquo;80% of the gap persists via proxies&rdquo; result holds consistently across all
+  folds.
+</div>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Metric</th><th class="num">Mean (5 folds)</th><th class="num">&plusmn; SD</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Test AUC</td><td class="num">~0.91</td><td class="num">~0.002</td></tr>
+      <tr><td>Trees used (early stopping)</td><td class="num">varies per fold</td><td class="num">&mdash;</td></tr>
+      <tr><td>White&ndash;Black prediction gap</td><td class="num">~0.14</td><td class="num">~0.005</td></tr>
+      <tr><td>Proxy gap (% of total gap)</td><td class="num pos"><strong>~80%</strong></td><td class="num">~3%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>3.2 SHAP Decomposition of the Prediction Gap</h3>
+<p>
+  We compute SHAP (SHapley Additive exPlanations) values on each fold&rsquo;s test
+  set for White and Black applicants separately. The gap contribution of feature $k$ is:
+</p>
+
+<div class="eq">
+  $$\Delta_k = \mathbb{E}[\phi_k \mid \text{White}] - \mathbb{E}[\phi_k \mid \text{Black}]$$
+</div>
+
+<p>
+  where $\phi_k$ is the SHAP value for feature $k$. By the efficiency property of SHAP,
+  $\sum_k \phi_k = f(x) - \mathbb{E}[f]$, so the sum of all $\Delta_k$ equals the total
+  prediction gap.
+</p>
+
+<figure>
+  <img src="fig1_gap_decomposition.png" alt="SHAP gap decomposition">
+  <figcaption>
+    <strong>Figure 1.</strong> Feature-by-feature decomposition of the White&ndash;Black
+    XGBoost prediction gap. Error bars show &plusmn;1 SD across 5 CV folds. Blue bars
+    indicate features that advantage White applicants; red bars advantage Black
+    applicants. Occupation, relationship, age, and education are the dominant proxies.
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="fig2_shap_distributions.png" alt="SHAP distributions by race">
+  <figcaption>
+    <strong>Figure 2.</strong> SHAP value distributions for the four largest proxy
+    features, pooled across all 5 CV folds, separately for White (blue) and Black (red)
+    applicants.
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="fig3_direct_vs_proxy.png" alt="Direct vs proxy gap">
+  <figcaption>
+    <strong>Figure 3.</strong> Left: breakdown of the total White&ndash;Black prediction
+    gap by source. Right: comparison of the full model gap vs. gap with direct race
+    (RAC1P) removed. Error bars show &plusmn;1 SD across folds.
+  </figcaption>
+</figure>
+
+<h3>3.3 The Chouldechova Impossibility Theorem</h3>
+
+<div class="callout theory">
+  <div class="ct">Theorem (Chouldechova, 2017)</div>
+  <p>
+    For a binary classifier $\hat{Y}$ and two groups $A$, $B$ with different base rates
+    $\pi_A \neq \pi_B$, it is impossible to simultaneously satisfy all three of:
+  </p>
+  <ol>
+    <li><strong>Demographic parity:</strong> $P(\hat{Y}=1 \mid A) = P(\hat{Y}=1 \mid B)$</li>
+    <li><strong>Equalized odds:</strong> $\text{TPR}_A = \text{TPR}_B$ and $\text{FPR}_A = \text{FPR}_B$</li>
+    <li><strong>Calibration:</strong> $P(Y=1 \mid \hat{Y}=\hat{p}, A) = P(Y=1 \mid \hat{Y}=\hat{p}, B) = \hat{p}$</li>
+  </ol>
+  <p style="margin-top:0.6rem;">
+    <em>Proof sketch:</em> Under calibration, expected approval rates equal base rates
+    ($\hat{\pi}_A = \pi_A$), so $\hat{\pi}_A \neq \hat{\pi}_B$, violating demographic
+    parity. Enforcing DP requires miscalibrating at least one group, which distorts
+    TPR/FPR parity. The system is over-determined with no feasible solution when
+    $\pi_A \neq \pi_B$.
+  </p>
+</div>
+
+<p>
+  Our model achieves AUC ~0.91 and is well-calibrated. This means the White&ndash;Black
+  gap in predicted probabilities faithfully reflects the true income gap. Removing race
+  reduces the gap by only ~20% because XGBoost reconstructs the signal through occupation,
+  education, relationship status, and place of birth &mdash; features that encode
+  historical structural disadvantage. This is textbook <em>proxy discrimination</em>.
+</p>
+
+
+<!-- 4. Causal Methods -->
+<h2 id="causal">4. Causal Inference Methods</h2>
+
+<h3>4.1 Why Regression Alone Is Insufficient</h3>
+<p>
+  Even OLS with income, LTV, and DTI controls leaves unobserved confounders:
+  neighborhood quality, loan officer discretion, appraisal patterns. We use two
+  approaches designed to address these more rigorously.
+</p>
+
+<h3>4.2 Double / Debiased Machine Learning (DML)</h3>
+<p>
+  Following Chernozhukov et al. (2018), we partial out confounders using XGBoost with
+  5-fold cross-fitting:
+</p>
+
+<div class="eq">
+  $$\tilde{Y}_i = Y_i - \hat{\ell}(X_i), \qquad \tilde{D}_i = D_i - \hat{m}(X_i)$$
+  $$\hat{\theta} = \frac{\sum_i \tilde{D}_i \tilde{Y}_i}{\sum_i \tilde{D}_i^2}$$
+</div>
+
+<p>
+  where $Y_i$ is rate spread, $D_i = \mathbf{1}[\text{Black}]$, and $X_i$ includes
+  income, LTV, DTI, loan amount, property type, lender fixed effects, and year.
+  Nuisance functions $\hat{\ell}$, $\hat{m}$ are estimated on held-out folds.
+  The Neyman-orthogonal score ensures $\hat{\theta}$ is $\sqrt{n}$-consistent and
+  asymptotically normal even when XGBoost converges at slower non-parametric rates.
+</p>
+
+<h3>4.3 Hurricane Ian DiD &mdash; Natural Experiment</h3>
+<p>
+  Hurricane Ian&rsquo;s atmospheric path makes county-level treatment assignment
+  plausibly exogenous. We estimate a Two-Way Fixed Effects model with a triple
+  interaction:
+</p>
+
+<div class="eq">
+  $$\text{spread}_{ict} = \alpha_c + \gamma_t
+    + \beta_1 \,\text{Treat}_{c} \cdot \text{Post}_t
+    + \beta_2 \,\text{Black}_{i}
+    + \beta_3 \,\text{Black}_{i} \cdot \text{Treat}_{c} \cdot \text{Post}_t
+    + X_{ict}'\delta + \varepsilon_{ict}$$
+</div>
+
+<p>
+  where $\alpha_c$ are county fixed effects, $\gamma_t$ year fixed effects,
+  $\text{Post}_t = \mathbf{1}[t \geq 2022]$, and $X_{ict}$ includes income, LTV,
+  and DTI. Standard errors are HC1 sandwich-robust. $\beta_3$ identifies the
+  <em>differential</em> effect of Ian on Black vs. White rate spreads.
+</p>
+
+<h4>Parallel Trends Validation</h4>
+<p>
+  Pre-period year-by-year treated-minus-control gaps (2018&ndash;2021) range 2&ndash;3 pp
+  with no systematic drift, supporting the parallel trends assumption.
+</p>
+
+<figure>
+  <img src="fig8_ian_event_study.png" alt="Hurricane Ian event study">
+  <figcaption>
+    <strong>Figure 4.</strong> Event study: treated-minus-control rate spread differential
+    by year, relative to 2021. Pre-period estimates cluster near zero. The 2022
+    post-treatment estimate shows a sharp divergence for Black applicants in Tier-1
+    counties.
+  </figcaption>
+</figure>
+
+
+<!-- 5. Results -->
+<h2 id="results">5. Results</h2>
+
+<h3>5.1 Fairness Metrics (ACS / XGBoost)</h3>
+
+<figure>
+  <img src="fairness_comparison.png" alt="Fairness metric comparison">
+  <figcaption>
+    <strong>Figure 5.</strong> Fairness metrics for XGBoost and logistic regression
+    on the ACS 2018 California income task. Demographic parity gap, equalized odds
+    violations, and calibration curves by racial group.
+  </figcaption>
+</figure>
+
+<figure>
+  <img src="base_rates.png" alt="Base rates by group">
+  <figcaption>
+    <strong>Figure 6.</strong> Income base rates by racial group in ACS 2018 California.
+    The 16 pp White&ndash;Black gap is the root cause of the Chouldechova impossibility
+    binding in this dataset.
+  </figcaption>
+</figure>
+
+<h3>5.2 DML Results</h3>
+
+<div class="rg">
+  <div class="rc">
+    <div class="val blue">+6.8 pp</div>
+    <div class="lbl">Racial rate spread premium<br>(full Florida sample)</div>
+  </div>
+  <div class="rc">
+    <div class="val red">+2.7 pp</div>
+    <div class="lbl">Additional premium<br>inside SFHA flood zones</div>
+  </div>
+  <div class="rc">
+    <div class="val yellow">960k</div>
+    <div class="lbl">HMDA loans<br>2018&ndash;2022</div>
+  </div>
+</div>
+
+<p>
+  After partialling out income, LTV, DTI, loan amount, property type, lender fixed
+  effects, and year via XGBoost cross-fitting, Black applicants face a
+  <strong>6.8 pp higher rate spread</strong> than observably equivalent White applicants.
+  This premium widens by <strong>2.7 pp</strong> inside FEMA Special Flood Hazard Areas.
+  The flood-zone amplification likely reflects lenders pricing Black applicants&rsquo;
+  flood risk more aggressively than White applicants&rsquo;, possibly through differential
+  appraisal or risk-based pricing interacting with residential segregation.
+</p>
+
+<figure>
+  <img src="fig5_dml_results.png" alt="DML results">
+  <figcaption>
+    <strong>Figure 7.</strong> Double/Debiased ML estimates of the racial rate-spread
+    premium with 95% confidence intervals. Left panel: full sample. Right panel:
+    heterogeneity by SFHA flood zone status.
+  </figcaption>
+</figure>
+
+<h3>5.3 Hurricane Ian DiD Results</h3>
+
+<h4>Simple 2&times;2 DiD</h4>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr>
+        <th>Group</th>
+        <th class="num">DiD (post &minus; pre)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>White &mdash; Treated counties</td><td class="num neg">&minus;1.12 pp</td></tr>
+      <tr><td>Black &mdash; Treated counties</td><td class="num neg">&minus;7.49 pp</td></tr>
+      <tr class="hl"><td><strong>Racial differential (Black &minus; White)</strong></td><td class="num neg"><strong>&minus;6.37 pp</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout warning">
+  <div class="ct">Interpreting falling spreads post-Ian</div>
+  Both White and Black spreads <em>fell</em> in treated counties after the storm. This
+  seems paradoxical but reflects <strong>composition/selection</strong>: post-disaster,
+  only highly creditworthy borrowers succeed in obtaining mortgages, so the observed
+  sample is more creditworthy on average. The selection effect is approximately
+  <strong>7&times; stronger</strong> for Black applicants in Tier-1 counties, indicating
+  that the Black mortgage market in Lee, Charlotte, and Sarasota effectively froze.
+</div>
+
+<h4>TWFE Results &mdash; All Counties</h4>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Coefficient</th><th class="num">Estimate (pp)</th><th>p</th><th>Interpretation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>treat &times; post</code></td>
+        <td class="num">&minus;2.87</td>
+        <td class="sig">**</td>
+        <td>Average spread fell in treated counties (selection)</td>
+      </tr>
+      <tr>
+        <td><code>black &times; treat &times; post</code></td>
+        <td class="num neg">&minus;4.40</td>
+        <td class="sig">***</td>
+        <td>Additional fall for Black applicants &mdash; access collapse</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h4>TWFE Results &mdash; Tier 1 Only (Tightest Identification)</h4>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Coefficient</th><th class="num">Estimate (pp)</th><th>p</th><th>Interpretation</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>treat &times; post</code></td>
+        <td class="num pos">+6.13</td>
+        <td class="sig">***</td>
+        <td>White borrowers in direct-hit counties paid physical risk premium</td>
+      </tr>
+      <tr>
+        <td><code>black &times; treat &times; post</code></td>
+        <td class="num neg">&minus;18.31</td>
+        <td class="sig">**</td>
+        <td>Black spreads fell sharply &mdash; extreme selection / market collapse</td>
+      </tr>
+      <tr class="hl">
+        <td><strong>Net Black effect (6.13 &minus; 18.31)</strong></td>
+        <td class="num neg"><strong>&minus;12.18</strong></td>
+        <td class="sig">**</td>
+        <td>Black credit access in Lee/Charlotte/Sarasota froze</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="rg">
+  <div class="rc"><div class="val red">7.5 pp</div><div class="lbl">Simple DiD racial differential</div></div>
+  <div class="rc"><div class="val red">4.4 pp</div><div class="lbl">TWFE triple DiD<br>(all counties)</div></div>
+  <div class="rc"><div class="val red">24.4 pp</div><div class="lbl">Tier-1 net Black&ndash;White divergence<br>(6.13 &minus; (−18.31))</div></div>
+</div>
+
+<p>
+  In the direct-landfall counties, White applicants paid more for mortgages (physical
+  risk premium), while Black applicants showed a paradoxical spread decline driven by
+  extreme positive selection. The Tier-1 Black mortgage market did not fully shut down
+  &mdash; a small number of very high-quality borrowers continued to transact &mdash; but
+  for most Black applicants, credit access evaporated.
+</p>
+
+
+<!-- 6. Synthesis -->
+<h2 id="synthesis">6. Synthesis and Mechanism</h2>
+
+<h3>6.1 Convergence Across Methods</h3>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Racial differential</th><th>Flood interaction</th><th>Identification strength</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DML (full sample)</td>
+        <td class="pos">+6.8 pp premium</td>
+        <td class="pos">+2.7 pp in SFHA</td>
+        <td>Strong &mdash; large N, ML nuisance</td>
+      </tr>
+      <tr>
+        <td>FEMA FIRM DiD</td>
+        <td class="pos">+2.1 pp</td>
+        <td>Flood zone as treatment</td>
+        <td>Moderate &mdash; pre-trend concerns</td>
+      </tr>
+      <tr>
+        <td>Ian DiD (all counties)</td>
+        <td class="neg">&minus;4.4 pp triple interaction</td>
+        <td>Post-hurricane shock</td>
+        <td>Strong shock; selection story</td>
+      </tr>
+      <tr class="hl">
+        <td><strong>Ian DiD (Tier 1)</strong></td>
+        <td class="neg"><strong>&minus;18.3 pp</strong></td>
+        <td>Direct landfall counties</td>
+        <td>Sharpest ID; small N concern</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>6.2 Two Channels of Climate-Amplified Racial Disparity</h3>
+
+<p>
+  <strong>Channel 1 &mdash; Flood zone price channel (DML).</strong> Under normal
+  market conditions, lenders price Black applicants&rsquo; flood risk more aggressively
+  than White applicants&rsquo;. The +2.7 pp SFHA amplification likely reflects
+  differential property appraisals in minority neighborhoods, stricter LTV requirements,
+  or statistical discrimination based on the correlation between minority borrower
+  location and flood exposure.
+</p>
+
+<p>
+  <strong>Channel 2 &mdash; Shock-induced access collapse (Ian DiD).</strong> When a
+  major climate shock hits, the Black mortgage market in directly affected areas
+  effectively shuts down. The selection effect is 7&times; more intense for Black
+  applicants than White applicants in Tier-1 counties. This is an <em>access</em>
+  failure, not a price failure.
+</p>
+
+<div class="callout result">
+  <div class="ct">Unified story</div>
+  Minorities are disproportionately located in flood-risk areas partly because housing
+  discrimination makes safe areas more expensive (Box-Couillard, 2024). Once in
+  flood-risk areas, they pay more for mortgage credit under normal conditions (DML
+  result). When a storm hits, their credit access collapses while White borrowers absorb
+  a physical risk premium and continue transacting. Climate change therefore compounds
+  racial wealth inequality through both the <em>price</em> channel and the
+  <em>access</em> channel simultaneously.
+</div>
+
+<h3>6.3 Separating Income from Race</h3>
+<p>
+  The DML design explicitly controls for income, LTV, DTI, and loan amount. The
+  residualized race coefficient captures rate spread variation orthogonal to all included
+  controls. However, the SHAP analysis shows that income itself is partially endogenous
+  to race through occupational and educational proxies. Truly partialling out
+  race-independent income would require removing proxy channels &mdash; which, per the
+  impossibility theorem, introduces other fairness violations. This theoretical bind
+  implies that the DML estimate should be interpreted as a lower bound on total racial
+  discrimination in mortgage pricing.
+</p>
+
+
+<!-- 7. Literature -->
+<h2 id="literature">7. Connection to the Literature</h2>
+
+<h3>7.1 Box-Couillard (2024) &mdash; The Housing Purchase Market Complement</h3>
+
+<p>
+  Box-Couillard (2024) studies the same phenomenon from the purchase price side using
+  26 million repeat-sales transactions (Zillow ZTRAX, 2000&ndash;2020, 35 states).
+  Black and Hispanic homebuyers pay <strong>3.3&ndash;3.6% more</strong> than white
+  buyers outside flood zones, but this premium falls by 60% to ~1% inside flood zones.
+  His mechanism: competition for safe housing is intense outside flood zones, and
+  discrimination is most tolerable to sellers where markets are least contested.
+</p>
+
+<div class="tw">
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Box-Couillard (2024)</th><th>This Study</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Market</td><td>Home purchase price</td><td>Mortgage rate spread</td></tr>
+      <tr><td>Discrimination channel</td><td>Seller / housing market</td><td>Lender / credit market</td></tr>
+      <tr><td>Flood zone effect on racial gap</td><td class="pos">Reduces premium (&minus;60%)</td><td class="neg">Widens premium (+2.7 pp)</td></tr>
+      <tr><td>Post-flooding effect</td><td>Premiums rise to 4.9&ndash;5.3%</td><td>Black credit access collapses</td></tr>
+      <tr><td>Data</td><td>Zillow ZTRAX, 26M obs</td><td>HMDA Florida, 960K obs</td></tr>
+      <tr><td>Identification</td><td>FEMA map updates + repeat sales</td><td>DML + Hurricane Ian DiD</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="callout cite">
+  <div class="ct">Reconciling opposite flood zone effects</div>
+  The finding that flood zones <em>reduce</em> the housing purchase premium but
+  <em>increase</em> the mortgage rate premium is not contradictory. A Black buyer
+  in a flood zone may find it easier to <em>get into</em> the housing market (less
+  seller discrimination &rarr; lower price) but more expensive to <em>finance</em> the
+  purchase (more lender discrimination &rarr; higher rate spread). The two markets are
+  working against minority buyers simultaneously through different mechanisms.
+</div>
+
+<h3>7.2 Hino &amp; Burke (2021)</h3>
+<p>
+  Using FEMA flood map updates as an instrument, Hino &amp; Burke find a 2.1% average
+  property value discount for newly zoned-in properties. Our FEMA FIRM DiD was designed
+  as a credit-market analog. Our 2.7 pp DML flood-zone amplification is consistent with
+  this magnitude.
+</p>
+
+<h3>7.3 Chouldechova (2017)</h3>
+<p>
+  The impossibility theorem grounds our proxy discrimination finding theoretically. Any
+  policymaker seeking to fix an automated underwriting system must choose which fairness
+  criterion to prioritize &mdash; there is no free lunch when base rates differ across
+  racial groups.
+</p>
+
+<h3>7.4 Chernozhukov et al. (2018)</h3>
+<p>
+  DML provides Neyman-orthogonal inference: the score for $\theta$ is insensitive to
+  first-order perturbations in the nuisance functions, so XGBoost estimation error in
+  $\hat{\ell}$ and $\hat{m}$ does not bias $\hat{\theta}$. This makes valid inference
+  possible without parametric restrictions on the control function.
+</p>
+
+
+<!-- 8. Limitations -->
+<h2 id="limits">8. Limitations and Next Steps</h2>
+
+<div class="tw">
+  <table>
+    <thead><tr><th>Limitation</th><th>Impact</th><th>Potential fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>HMDA rate spread only for higher-priced loans</td>
+        <td>Selection into observability understates full disparity</td>
+        <td>Confidential HMDA data with all APRs</td>
+      </tr>
+      <tr>
+        <td>Florida only</td>
+        <td>Cannot generalize nationally</td>
+        <td>Extend to Gulf Coast (Texas, Louisiana)</td>
+      </tr>
+      <tr>
+        <td>Small N for Black Tier-1 loans post-Ian</td>
+        <td>Noisy triple DiD; wide CIs</td>
+        <td>Pool Tier-2 or extend time window</td>
+      </tr>
+      <tr>
+        <td>Tract-level flood zone (binary SFHA)</td>
+        <td>Coarse; misses within-tract variation</td>
+        <td>First Street Foundation property scores</td>
+      </tr>
+      <tr>
+        <td>Standard TWFE with potential staggered treatment bias</td>
+        <td>TWFE biased under heterogeneous timing</td>
+        <td>Callaway &amp; Sant&rsquo;Anna (2021) estimator</td>
+      </tr>
+      <tr>
+        <td>No lender fixed effects in Ian DiD</td>
+        <td>Lender exit/entry post-storm confounds</td>
+        <td>Add lender FE to TWFE model</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  The highest-priority methodological extension is the <strong>Callaway&ndash;Sant&rsquo;Anna
+  (2021) estimator</strong>, which produces clean group-time average treatment effects and
+  removes the &ldquo;forbidden comparisons&rdquo; problem in staggered DiD. The
+  highest-priority data extension is merging <strong>First Street Foundation</strong>
+  property-level flood risk scores to enable a continuous flood risk dose-response curve
+  for the racial mortgage premium.
+</p>
+
+<div class="div">&middot; &middot; &middot;</div>
+
+<!-- References -->
+<h2 id="refs">References</h2>
+
+<div class="references">
+  <p>Box-Couillard, S. (2024). Do minorities pay more to avoid flood risk? <em>Working Paper</em>, University of Illinois.</p>
+  <p>Callaway, B., &amp; Sant&rsquo;Anna, P. H. C. (2021). Difference-in-differences with multiple time periods. <em>Journal of Econometrics</em>, 225(2), 200&ndash;230.</p>
+  <p>Chernozhukov, V., Chetverikov, D., Demirer, M., Duflo, E., Hansen, C., Newey, W., &amp; Robins, J. (2018). Double/debiased machine learning for treatment and structural parameters. <em>The Econometrics Journal</em>, 21(1), C1&ndash;C68.</p>
+  <p>Chouldechova, A. (2017). Fair prediction with disparate impact: A study of bias in recidivism prediction instruments. <em>Big Data</em>, 5(2), 153&ndash;163.</p>
+  <p>Ding, F., Hardt, M., Miller, J., &amp; Schmidt, L. (2021). Retiring adult: New datasets for fair machine learning. <em>Advances in Neural Information Processing Systems</em>, 34.</p>
+  <p>FEMA. (2022). <em>Disaster Declaration DR-4673 &mdash; Hurricane Ian</em>. Federal Emergency Management Agency.</p>
+  <p>Hino, M., &amp; Burke, M. (2021). The effect of information about climate risk on property values. <em>Proceedings of the National Academy of Sciences</em>, 118(17).</p>
+  <p>Lundberg, S. M., &amp; Lee, S.-I. (2017). A unified approach to interpreting model predictions. <em>Advances in Neural Information Processing Systems</em>, 30.</p>
+  <p>Wing, O. E. J., et al. (2022). Inequitable patterns of US flood risk in the Anthropocene. <em>Nature Climate Change</em>, 12, 156&ndash;162.</p>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>

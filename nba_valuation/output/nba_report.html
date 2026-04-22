@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA Valuation Report — 2025-26</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0e0f11;
+    --surface:  #16181c;
+    --border:   #2a2d35;
+    --text:     #e8eaf0;
+    --muted:    #6b7280;
+    --accent:   #3b82f6;
+    --green:    #22c55e;
+    --red:      #ef4444;
+    --amber:    #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .header h1 span { color: var(--accent); font-weight: 600; }
+  .header p { color: var(--muted); margin-top: 6px; font-size: 13px; }
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    padding: 28px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .card .value { font-size: 26px; font-weight: 600; margin-top: 4px; color: var(--text); }
+  .card .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  nav {
+    display: flex;
+    gap: 4px;
+    padding: 20px 40px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  nav button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 10px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+  }
+  nav button:hover { color: var(--text); }
+  nav button.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .section { display: none; padding: 32px 40px; }
+  .section.active { display: block; }
+  .section-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .section-desc { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 10px 12px;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .data-table tr:hover td { background: var(--surface); }
+  .data-table td.num {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  .data-table td.player-name {
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--text);
+  }
+  .flag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 2px;
+    line-height: 1.4;
+  }
+  .flag-green { background: #052e16; color: #86efac; }
+  .flag-red   { background: #2c0a0a; color: #fca5a5; }
+  .bar-track  { height: 4px; background: var(--border); border-radius: 2px; width: 80px; }
+  .bar-fill   { height: 4px; border-radius: 2px; }
+  .screener-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .screener-block h3 {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .overvalued-title  { color: var(--red); }
+  .undervalued-title { color: var(--green); }
+  .elite-title       { color: var(--accent); }
+  .hidden-title      { color: var(--amber); }
+  @media (max-width: 900px) {
+    .summary-cards { grid-template-columns: 1fr 1fr; }
+    .screener-grid { grid-template-columns: 1fr; }
+    .header, nav, .section { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>NBA <span>Valuation</span> Report</h1>
+  <p>Season 2025-26 &nbsp;·&nbsp; RAPM + tracking validation + lineup synergy</p>
+</div>
+
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">Top player</div>
+    <div class="value" style="font-size:18px;margin-top:6px">Victor Wembanyama</div>
+    <div class="sub">RAPM +5.16</div>
+  </div>
+  <div class="card">
+    <div class="label">Players rated</div>
+    <div class="value">468</div>
+    <div class="sub">with on/off + tracking</div>
+  </div>
+  <div class="card">
+    <div class="label">Lineups scored</div>
+    <div class="value">542</div>
+    <div class="sub">synergy decomposed</div>
+  </div>
+  <div class="card">
+    <div class="label">Reliable pairs</div>
+    <div class="value">1976</div>
+    <div class="sub">≥60 shared poss</div>
+  </div>
+</div>
+
+<nav>
+  <button class="active" onclick="show('players', this)">Players</button>
+  <button onclick="show('screener', this)">Screener</button>
+  <button onclick="show('lineups', this)">Lineups</button>
+  <button onclick="show('pairs', this)">Pairings</button>
+</nav>
+
+<!-- PLAYERS -->
+<div id="players" class="section active">
+  <div class="section-title">Player ratings</div>
+  <div class="section-desc">Sorted by RAPM. Support score measures how well tracking data explains the RAPM estimate.</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th>
+      <th>Player</th>
+      <th style="text-align:right">RAPM</th>
+      <th style="text-align:right">Prior</th>
+      <th style="text-align:right">Adjust</th>
+      <th style="text-align:right">Support</th>
+      <th style="text-align:right">Off</th>
+      <th style="text-align:right">Def</th>
+      <th>Flags</th>
+    </tr></thead>
+    <tbody>
+      
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">Victor Wembanyama</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.16</span></td>
+          <td class="num">+3.16</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">86</span></td>
+          <td class="num">77</td>
+          <td class="num">97</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (95th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (98th pct)</span><span class="flag flag-green">High contest volume (98th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (85th pct)</span><span class="flag flag-green">Disruptive defender — deflections (90th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">CJ McCollum</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+4.67</span></td>
+          <td class="num">+0.13</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">53</span></td>
+          <td class="num">49</td>
+          <td class="num">58</td>
+          <td class="flags"></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Chet Holmgren</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+4.06</span></td>
+          <td class="num">+1.31</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">80</span></td>
+          <td class="num">69</td>
+          <td class="num">94</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (93th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (95th pct)</span><span class="flag flag-green">High contest volume (99th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (84th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 87th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Donovan Mitchell</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.63</span></td>
+          <td class="num">+1.69</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">52</span></td>
+          <td class="num">58</td>
+          <td class="num">44</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (93th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Shai Gilgeous-Alexander</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.56</span></td>
+          <td class="num">+2.74</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">75</span></td>
+          <td class="num">72</td>
+          <td class="num">80</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (90th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (87th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 84th pct)</span><span class="flag flag-green">Disruptive defender — deflections (94th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">Devin Vassell</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.40</span></td>
+          <td class="num">-0.10</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">56</span></td>
+          <td class="num">57</td>
+          <td class="num">55</td>
+          <td class="flags"></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">Derrick White</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.13</span></td>
+          <td class="num">+0.88</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">67</span></td>
+          <td class="num">54</td>
+          <td class="num">84</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (89th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (85th pct)</span><span class="flag flag-green">High contest volume (94th pct)</span><span class="flag flag-green">Disruptive defender — deflections (90th pct)</span><span class="flag flag-red">Poor shooting efficiency despite positive RAPM (20th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Julian Champagnie</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.11</span></td>
+          <td class="num">-0.24</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">59</span></td>
+          <td class="num">65</td>
+          <td class="num">51</td>
+          <td class="flags"><span class="flag flag-green">Elite off-ball value — screen assists (76th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 77th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">Jalen Duren</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.09</span></td>
+          <td class="num">+1.62</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">76</span></td>
+          <td class="num">72</td>
+          <td class="num">82</td>
+          <td class="flags"><span class="flag flag-green">Opponents shoot well below their average when guarded (83th pct)</span><span class="flag flag-green">High contest volume (97th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (95th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 94th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Giannis Antetokounmpo</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.07</span></td>
+          <td class="num">+2.68</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">74</span></td>
+          <td class="num">71</td>
+          <td class="num">79</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (85th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (90th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (88th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 92th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">Alex Caruso</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.06</span></td>
+          <td class="num">+0.50</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">58</span></td>
+          <td class="num">58</td>
+          <td class="num">58</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (95th pct)</span><span class="flag flag-red">Poor shooting efficiency despite positive RAPM (30th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Nikola Jokić</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.03</span></td>
+          <td class="num">+2.60</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">72</span></td>
+          <td class="num">88</td>
+          <td class="num">53</td>
+          <td class="flags"><span class="flag flag-green">High contest volume (87th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (98th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 91th pct)</span><span class="flag flag-green">Disruptive defender — deflections (93th pct)</span><span class="flag flag-red">Opponents shoot well against this player (15th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td class="player-name">Scottie Barnes</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+3.02</span></td>
+          <td class="num">+0.80</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">64</span></td>
+          <td class="num">64</td>
+          <td class="num">64</td>
+          <td class="flags"><span class="flag flag-green">High contest volume (88th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (81th pct)</span><span class="flag flag-green">Disruptive defender — deflections (96th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td class="player-name">LaMelo Ball</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.72</span></td>
+          <td class="num">+1.64</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#ef4444">39</span></td>
+          <td class="num">49</td>
+          <td class="num">26</td>
+          <td class="flags"><span class="flag flag-red">RAPM (+2.7) high but tracking support low (39th pct)</span><span class="flag flag-red">Opponents shoot well against this player (28th pct)</span><span class="flag flag-red">Opponents shoot above their average when guarded (19th pct)</span><span class="flag flag-red">Low contest volume — positive RAPM not from active defense</span></td>
+        </tr>
+        <tr>
+          <td class="num">15</td>
+          <td class="player-name">Jaime Jaquez Jr.</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.68</span></td>
+          <td class="num">-0.04</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">50</span></td>
+          <td class="num">38</td>
+          <td class="num">64</td>
+          <td class="flags"><span class="flag flag-green">High contest volume (82th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">16</td>
+          <td class="player-name">Bam Adebayo</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.68</span></td>
+          <td class="num">+0.89</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">70</span></td>
+          <td class="num">59</td>
+          <td class="num">83</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (71th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (84th pct)</span><span class="flag flag-green">High contest volume (89th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (83th pct)</span><span class="flag flag-green">Disruptive defender — deflections (84th pct)</span><span class="flag flag-red">Poor shooting efficiency despite positive RAPM (23th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">17</td>
+          <td class="player-name">Jarrett Allen</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.63</span></td>
+          <td class="num">+0.65</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">78</span></td>
+          <td class="num">77</td>
+          <td class="num">80</td>
+          <td class="flags"><span class="flag flag-green">Opponents shoot well below their average when guarded (87th pct)</span><span class="flag flag-green">High contest volume (96th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (95th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 93th pct)</span><span class="flag flag-green">Disruptive defender — deflections (88th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">18</td>
+          <td class="player-name">Ajay Mitchell</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.58</span></td>
+          <td class="num">+0.86</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">63</span></td>
+          <td class="num">55</td>
+          <td class="num">72</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (96th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (94th pct)</span><span class="flag flag-green">Disruptive defender — deflections (89th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">19</td>
+          <td class="player-name">Donte DiVincenzo</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+2.55</span></td>
+          <td class="num">-0.25</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">59</span></td>
+          <td class="num">64</td>
+          <td class="num">54</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (95th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">20</td>
+          <td class="player-name">Brandon Miller</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.50</span></td>
+          <td class="num">+1.03</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">71</span></td>
+          <td class="num">65</td>
+          <td class="num">77</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (83th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (81th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">21</td>
+          <td class="player-name">Dylan Harper</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.35</span></td>
+          <td class="num">+0.42</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">46</span></td>
+          <td class="num">35</td>
+          <td class="num">60</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (87th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">22</td>
+          <td class="player-name">Cade Cunningham</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.31</span></td>
+          <td class="num">+1.90</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">63</span></td>
+          <td class="num">50</td>
+          <td class="num">80</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (85th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (81th pct)</span><span class="flag flag-green">High contest volume (79th pct)</span><span class="flag flag-green">Disruptive defender — deflections (88th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">23</td>
+          <td class="player-name">Jalen Suggs</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.27</span></td>
+          <td class="num">+0.67</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">50</span></td>
+          <td class="num">55</td>
+          <td class="num">43</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (97th pct)</span><span class="flag flag-red">Opponents shoot well against this player (26th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">24</td>
+          <td class="player-name">Dean Wade</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.24</span></td>
+          <td class="num">-0.87</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">69</span></td>
+          <td class="num">64</td>
+          <td class="num">75</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (82th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (80th pct)</span><span class="flag flag-green">High contest volume (79th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">25</td>
+          <td class="player-name">Devin Booker</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.23</span></td>
+          <td class="num">+1.00</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">60</span></td>
+          <td class="num">49</td>
+          <td class="num">74</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (86th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (86th pct)</span><span class="flag flag-red">Poor shooting efficiency despite positive RAPM (26th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">26</td>
+          <td class="player-name">Isaiah Hartenstein</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.22</span></td>
+          <td class="num">+0.76</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">82</span></td>
+          <td class="num">75</td>
+          <td class="num">90</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (91th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (95th pct)</span><span class="flag flag-green">High contest volume (91th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (99th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 91th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">27</td>
+          <td class="player-name">Jamal Murray</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.21</span></td>
+          <td class="num">+1.05</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">60</span></td>
+          <td class="num">70</td>
+          <td class="num">49</td>
+          <td class="flags"><span class="flag flag-red">Opponents shoot well against this player (35th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">28</td>
+          <td class="player-name">Neemias Queta</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.19</span></td>
+          <td class="num">+0.61</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#22c55e">77</span></td>
+          <td class="num">68</td>
+          <td class="num">87</td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (79th pct)</span><span class="flag flag-green">Opponents shoot well below their average when guarded (90th pct)</span><span class="flag flag-green">High contest volume (94th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (99th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 93th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">29</td>
+          <td class="player-name">Nickeil Alexander-Walker</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.10</span></td>
+          <td class="num">+0.24</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">56</span></td>
+          <td class="num">73</td>
+          <td class="num">35</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (97th pct)</span><span class="flag flag-red">Opponents shoot well against this player (14th pct)</span><span class="flag flag-red">Opponents shoot above their average when guarded (12th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">30</td>
+          <td class="player-name">Kawhi Leonard</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.06</span></td>
+          <td class="num">+2.34</td>
+          <td class="num">—</td>
+          <td class="num"><span style="color:#f59e0b">51</span></td>
+          <td class="num">60</td>
+          <td class="num">39</td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (97th pct)</span><span class="flag flag-red">Opponents shoot well against this player (15th pct)</span><span class="flag flag-red">Opponents shoot above their average when guarded (16th pct)</span></td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SCREENER -->
+<div id="screener" class="section">
+  <div class="section-title">Mispricing screener</div>
+  <div class="section-desc">Players where RAPM and tracking support diverge — potential over or undervaluation signals.</div>
+  <div class="screener-grid">
+    <div class="screener-block">
+      <h3 class="overvalued-title">Overvalued — high RAPM, low tracking support</h3>
+      
+        <table class="data-table">
+          <thead><tr>
+            <th>#</th><th>Player</th>
+            <th>RAPM</th><th>RAPM pct</th><th>Support</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="player-name">Gradey Dick</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.54</span></td>
+              <td class="num">89</td>
+              <td class="num"><span style="color:#ef4444">30</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="player-name">Pat Spencer</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.49</span></td>
+              <td class="num">67</td>
+              <td class="num"><span style="color:#ef4444">30</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="player-name">Scoot Henderson</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.54</span></td>
+              <td class="num">69</td>
+              <td class="num"><span style="color:#ef4444">33</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="player-name">Jase Richardson</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.70</span></td>
+              <td class="num">72</td>
+              <td class="num"><span style="color:#ef4444">34</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="player-name">Jamaree Bouyea</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.92</span></td>
+              <td class="num">77</td>
+              <td class="num"><span style="color:#ef4444">36</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="player-name">Buddy Hield</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.58</span></td>
+              <td class="num">70</td>
+              <td class="num"><span style="color:#ef4444">37</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="player-name">T.J. McConnell</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.30</span></td>
+              <td class="num">86</td>
+              <td class="num"><span style="color:#ef4444">38</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="player-name">Daniss Jenkins</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.12</span></td>
+              <td class="num">83</td>
+              <td class="num"><span style="color:#ef4444">38</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td class="player-name">Garrison Mathews</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.45</span></td>
+              <td class="num">66</td>
+              <td class="num"><span style="color:#ef4444">38</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="player-name">LaMelo Ball</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+2.72</span></td>
+              <td class="num">97</td>
+              <td class="num"><span style="color:#ef4444">39</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="player-name">Tyler Kolek</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.50</span></td>
+              <td class="num">68</td>
+              <td class="num"><span style="color:#ef4444">39</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="player-name">Dejounte Murray</td>
+              <td class="num"><span style="color:#d1fae5;font-weight:600">+0.77</span></td>
+              <td class="num">73</td>
+              <td class="num"><span style="color:#ef4444">40</span></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <div class="screener-block">
+      <h3 class="undervalued-title">Undervalued — low RAPM, high tracking support</h3>
+      
+        <table class="data-table">
+          <thead><tr>
+            <th>#</th><th>Player</th>
+            <th>RAPM</th><th>RAPM pct</th><th>Support</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="player-name">Luke Kornet</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.70</span></td>
+              <td class="num">23</td>
+              <td class="num"><span style="color:#22c55e">79</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="player-name">Marvin Bagley III</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.84</span></td>
+              <td class="num">18</td>
+              <td class="num"><span style="color:#22c55e">78</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="player-name">Collin Murray-Boyles</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.09</span></td>
+              <td class="num">12</td>
+              <td class="num"><span style="color:#22c55e">78</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="player-name">Daniel Gafford</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.46</span></td>
+              <td class="num">7</td>
+              <td class="num"><span style="color:#22c55e">77</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="player-name">John Collins</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.41</span></td>
+              <td class="num">33</td>
+              <td class="num"><span style="color:#22c55e">77</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="player-name">Donovan Clingan</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.64</span></td>
+              <td class="num">24</td>
+              <td class="num"><span style="color:#22c55e">75</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="player-name">Jakob Poeltl</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.72</span></td>
+              <td class="num">21</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="player-name">Spencer Jones</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.85</span></td>
+              <td class="num">5</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td class="player-name">Ivica Zubac</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.49</span></td>
+              <td class="num">30</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="player-name">Kel&#x27;el Ware</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.95</span></td>
+              <td class="num">4</td>
+              <td class="num"><span style="color:#22c55e">71</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="player-name">Ryan Kalkbrenner</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.86</span></td>
+              <td class="num">17</td>
+              <td class="num"><span style="color:#f59e0b">68</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="player-name">Kyshawn George</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-2.06</span></td>
+              <td class="num">3</td>
+              <td class="num"><span style="color:#f59e0b">68</span></td>
+            </tr>
+            <tr>
+              <td class="num">13</td>
+              <td class="player-name">Jusuf Nurkić</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.83</span></td>
+              <td class="num">18</td>
+              <td class="num"><span style="color:#f59e0b">68</span></td>
+            </tr>
+            <tr>
+              <td class="num">14</td>
+              <td class="player-name">Nikola Vučević</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.52</span></td>
+              <td class="num">30</td>
+              <td class="num"><span style="color:#f59e0b">68</span></td>
+            </tr>
+            <tr>
+              <td class="num">15</td>
+              <td class="player-name">Nic Claxton</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-3.08</span></td>
+              <td class="num">1</td>
+              <td class="num"><span style="color:#f59e0b">67</span></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <div class="screener-block">
+      <h3 class="elite-title">Confirmed elite — high RAPM + high support</h3>
+      
+        <table class="data-table">
+          <thead><tr>
+            <th>#</th><th>Player</th>
+            <th>RAPM</th><th>RAPM pct</th><th>Support</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="player-name">Victor Wembanyama</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+5.16</span></td>
+              <td class="num">100</td>
+              <td class="num"><span style="color:#22c55e">86</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="player-name">Chet Holmgren</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+4.06</span></td>
+              <td class="num">100</td>
+              <td class="num"><span style="color:#22c55e">80</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="player-name">Shai Gilgeous-Alexander</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+3.56</span></td>
+              <td class="num">99</td>
+              <td class="num"><span style="color:#22c55e">75</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="player-name">Derrick White</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+3.13</span></td>
+              <td class="num">99</td>
+              <td class="num"><span style="color:#f59e0b">67</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="player-name">Jalen Duren</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+3.09</span></td>
+              <td class="num">98</td>
+              <td class="num"><span style="color:#22c55e">76</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="player-name">Giannis Antetokounmpo</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+3.07</span></td>
+              <td class="num">98</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="player-name">Nikola Jokić</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+3.03</span></td>
+              <td class="num">98</td>
+              <td class="num"><span style="color:#22c55e">72</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="player-name">Bam Adebayo</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+2.68</span></td>
+              <td class="num">97</td>
+              <td class="num"><span style="color:#f59e0b">70</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td class="player-name">Jarrett Allen</td>
+              <td class="num"><span style="color:#22c55e;font-weight:600">+2.63</span></td>
+              <td class="num">97</td>
+              <td class="num"><span style="color:#22c55e">78</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="player-name">Brandon Miller</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+2.50</span></td>
+              <td class="num">96</td>
+              <td class="num"><span style="color:#22c55e">71</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="player-name">Dean Wade</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+2.24</span></td>
+              <td class="num">95</td>
+              <td class="num"><span style="color:#f59e0b">69</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="player-name">Isaiah Hartenstein</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+2.22</span></td>
+              <td class="num">95</td>
+              <td class="num"><span style="color:#22c55e">82</span></td>
+            </tr>
+            <tr>
+              <td class="num">13</td>
+              <td class="player-name">Neemias Queta</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+2.19</span></td>
+              <td class="num">94</td>
+              <td class="num"><span style="color:#22c55e">77</span></td>
+            </tr>
+            <tr>
+              <td class="num">14</td>
+              <td class="player-name">Joel Embiid</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+2.04</span></td>
+              <td class="num">94</td>
+              <td class="num"><span style="color:#f59e0b">68</span></td>
+            </tr>
+            <tr>
+              <td class="num">15</td>
+              <td class="player-name">Aaron Gordon</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.91</span></td>
+              <td class="num">93</td>
+              <td class="num"><span style="color:#f59e0b">67</span></td>
+            </tr></tbody>
+        </table>
+    </div>
+    <div class="screener-block">
+      <h3 class="hidden-title">Hidden gems — modest RAPM, tracking says more</h3>
+      
+        <table class="data-table">
+          <thead><tr>
+            <th>#</th><th>Player</th>
+            <th>RAPM</th><th>RAPM pct</th><th>Support</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="player-name">Luke Kornet</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.70</span></td>
+              <td class="num">23</td>
+              <td class="num"><span style="color:#22c55e">79</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="player-name">Marvin Bagley III</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.84</span></td>
+              <td class="num">18</td>
+              <td class="num"><span style="color:#22c55e">78</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="player-name">Collin Murray-Boyles</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.09</span></td>
+              <td class="num">12</td>
+              <td class="num"><span style="color:#22c55e">78</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="player-name">Daniel Gafford</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.46</span></td>
+              <td class="num">7</td>
+              <td class="num"><span style="color:#22c55e">77</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="player-name">John Collins</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.41</span></td>
+              <td class="num">33</td>
+              <td class="num"><span style="color:#22c55e">77</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="player-name">Donovan Clingan</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.64</span></td>
+              <td class="num">24</td>
+              <td class="num"><span style="color:#22c55e">75</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="player-name">Zach Collins</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.30</span></td>
+              <td class="num">39</td>
+              <td class="num"><span style="color:#22c55e">75</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="player-name">Jakob Poeltl</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.72</span></td>
+              <td class="num">21</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td class="player-name">Spencer Jones</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.85</span></td>
+              <td class="num">5</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="player-name">Ivica Zubac</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.49</span></td>
+              <td class="num">30</td>
+              <td class="num"><span style="color:#22c55e">74</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="player-name">Onyeka Okongwu</td>
+              <td class="num"><span style="color:#fecaca;font-weight:600">-0.20</span></td>
+              <td class="num">43</td>
+              <td class="num"><span style="color:#22c55e">72</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="player-name">Kel&#x27;el Ware</td>
+              <td class="num"><span style="color:#ef4444;font-weight:600">-1.95</span></td>
+              <td class="num">4</td>
+              <td class="num"><span style="color:#22c55e">71</span></td>
+            </tr></tbody>
+        </table>
+    </div>
+  </div>
+</div>
+
+<!-- LINEUPS -->
+<div id="lineups" class="section">
+  <div class="section-title">Top 50 lineups by synergy</div>
+  <div class="section-desc">Synergy delta = actual net rating minus sum of individual RAPMs. Shrunk = delta adjusted for sample size (k=500). Confidence = how much to trust the number.</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th>
+      <th>Players</th>
+      <th style="text-align:right">Poss</th>
+      <th style="text-align:right">Actual NR</th>
+      <th style="text-align:right">Expected</th>
+      <th style="text-align:right">Raw delta</th>
+      <th style="text-align:right">Shrunk</th>
+      <th style="text-align:right">Confidence</th>
+    </tr></thead>
+    <tbody>
+      
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">CJ McCollum, Nickeil Alexander-Walker, Onyeka Okongwu, Dyson Daniels, Mouhamed Gueye</td>
+          <td class="num">69</td>
+          <td class="num">+88.4</td>
+          <td class="num">+7.9</td>
+          <td class="num" style="color:#666">+80.5</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.8</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">Jaylen Brown, Jayson Tatum, Derrick White, Neemias Queta, Payton Pritchard</td>
+          <td class="num">54</td>
+          <td class="num">+74.1</td>
+          <td class="num">+8.2</td>
+          <td class="num" style="color:#666">+65.9</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.4</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Brandon Ingram, Scottie Barnes, Sandro Mamukelashvili, Gradey Dick, Jamal Shead</td>
+          <td class="num">56</td>
+          <td class="num">+69.6</td>
+          <td class="num">+5.7</td>
+          <td class="num" style="color:#666">+64.0</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.4</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Bam Adebayo, Jaime Jaquez Jr., Simone Fontecchio, Kel&#x27;el Ware, Kasparas Jakučionis</td>
+          <td class="num">58</td>
+          <td class="num">+65.5</td>
+          <td class="num">+4.5</td>
+          <td class="num" style="color:#666">+61.0</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.3</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Jrue Holiday, Jerami Grant, Sidy Cissoko, Toumani Camara, Donovan Clingan</td>
+          <td class="num">56</td>
+          <td class="num">+57.1</td>
+          <td class="num">+1.1</td>
+          <td class="num" style="color:#666">+56.0</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.7</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">Steven Adams, Alperen Sengun, Tari Eason, Amen Thompson, Reed Sheppard</td>
+          <td class="num">50</td>
+          <td class="num">+60.0</td>
+          <td class="num">+4.5</td>
+          <td class="num" style="color:#666">+55.5</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.0</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">Alex Caruso, Shai Gilgeous-Alexander, Isaiah Joe, Jaylin Williams, Ajay Mitchell</td>
+          <td class="num">79</td>
+          <td class="num">+62.0</td>
+          <td class="num">+11.3</td>
+          <td class="num" style="color:#666">+50.7</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.9</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Brook Lopez, Nicolas Batum, James Harden, Kawhi Leonard, Kris Dunn</td>
+          <td class="num">54</td>
+          <td class="num">+55.6</td>
+          <td class="num">+5.5</td>
+          <td class="num" style="color:#666">+50.0</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.9</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">Tim Hardaway Jr., Nikola Jokić, Bruce Brown, Christian Braun, Peyton Watson</td>
+          <td class="num">51</td>
+          <td class="num">+54.9</td>
+          <td class="num">+5.2</td>
+          <td class="num" style="color:#666">+49.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Coby White, Isaac Okoro, Jalen Smith, Ayo Dosunmu, Matas Buzelis</td>
+          <td class="num">51</td>
+          <td class="num">+49.0</td>
+          <td class="num">+0.3</td>
+          <td class="num" style="color:#666">+48.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.5</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">Michael Porter Jr., Ziaire Williams, Day&#x27;Ron Sharpe, Noah Clowney, Egor Dëmin</td>
+          <td class="num">55</td>
+          <td class="num">+41.8</td>
+          <td class="num">-4.6</td>
+          <td class="num" style="color:#666">+46.4</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Wendell Carter Jr., Desmond Bane, Franz Wagner, Jalen Suggs, Anthony Black</td>
+          <td class="num">64</td>
+          <td class="num">+51.6</td>
+          <td class="num">+6.3</td>
+          <td class="num" style="color:#666">+45.2</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.1</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td class="player-name">Santi Aldama, Vince Williams Jr., Zach Edey, Jaylen Wells, Cedric Coward</td>
+          <td class="num">73</td>
+          <td class="num">+46.6</td>
+          <td class="num">+2.3</td>
+          <td class="num" style="color:#666">+44.2</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.6</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td class="player-name">Kevin Durant, Josh Okogie, Alperen Sengun, Amen Thompson, Reed Sheppard</td>
+          <td class="num">51</td>
+          <td class="num">+49.0</td>
+          <td class="num">+5.3</td>
+          <td class="num" style="color:#666">+43.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.0</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">15</td>
+          <td class="player-name">Michael Porter Jr., Terance Mann, Day&#x27;Ron Sharpe, Noah Clowney, Egor Dëmin</td>
+          <td class="num">68</td>
+          <td class="num">+39.7</td>
+          <td class="num">-3.3</td>
+          <td class="num" style="color:#666">+43.0</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.2</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">16</td>
+          <td class="player-name">Al Horford, Jimmy Butler III, De&#x27;Anthony Melton, Brandin Podziemski, Will Richard</td>
+          <td class="num">51</td>
+          <td class="num">+45.1</td>
+          <td class="num">+3.2</td>
+          <td class="num" style="color:#666">+41.9</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.9</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">17</td>
+          <td class="player-name">Quentin Grimes, Tyrese Maxey, Dominick Barlow, Adem Bona, VJ Edgecombe</td>
+          <td class="num">72</td>
+          <td class="num">+44.4</td>
+          <td class="num">+2.7</td>
+          <td class="num" style="color:#666">+41.7</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.2</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">18</td>
+          <td class="player-name">Derrick White, Anfernee Simons, Neemias Queta, Sam Hauser, Hugo González</td>
+          <td class="num">89</td>
+          <td class="num">+49.4</td>
+          <td class="num">+8.9</td>
+          <td class="num" style="color:#666">+40.6</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.1</span></td>
+          <td class="num"><span style="color:#ef4444">15%</span></td>
+        </tr>
+        <tr>
+          <td class="num">19</td>
+          <td class="player-name">Tyus Jones, Jonathan Isaac, Wendell Carter Jr., Desmond Bane, Anthony Black</td>
+          <td class="num">84</td>
+          <td class="num">+42.9</td>
+          <td class="num">+2.4</td>
+          <td class="num" style="color:#666">+40.5</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.8</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">20</td>
+          <td class="player-name">Deni Avdija, Shaedon Sharpe, Caleb Love, Toumani Camara, Donovan Clingan</td>
+          <td class="num">70</td>
+          <td class="num">+37.1</td>
+          <td class="num">-2.6</td>
+          <td class="num" style="color:#666">+39.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.9</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">21</td>
+          <td class="player-name">Deandre Ayton, Luka Dončić, Rui Hachimura, Austin Reaves, Jake LaRavia</td>
+          <td class="num">55</td>
+          <td class="num">+38.2</td>
+          <td class="num">-0.3</td>
+          <td class="num" style="color:#666">+38.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.8</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">22</td>
+          <td class="player-name">Harrison Barnes, De&#x27;Aaron Fox, Luke Kornet, Keldon Johnson, Julian Champagnie</td>
+          <td class="num">61</td>
+          <td class="num">+44.3</td>
+          <td class="num">+6.0</td>
+          <td class="num" style="color:#666">+38.2</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.2</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">23</td>
+          <td class="player-name">Kentavious Caldwell-Pope, Jock Landale, GG Jackson, Cam Spencer, Jaylen Wells</td>
+          <td class="num">53</td>
+          <td class="num">+34.0</td>
+          <td class="num">-3.3</td>
+          <td class="num" style="color:#666">+37.2</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.6</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">24</td>
+          <td class="player-name">Lauri Markkanen, Svi Mykhailiuk, Walker Kessler, Keyonte George, Kyle Filipowski</td>
+          <td class="num">93</td>
+          <td class="num">+36.6</td>
+          <td class="num">-0.5</td>
+          <td class="num" style="color:#666">+37.1</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.8</span></td>
+          <td class="num"><span style="color:#ef4444">16%</span></td>
+        </tr>
+        <tr>
+          <td class="num">25</td>
+          <td class="player-name">Donovan Mitchell, Jarrett Allen, Darius Garland, Evan Mobley, Jaylon Tyson</td>
+          <td class="num">72</td>
+          <td class="num">+45.8</td>
+          <td class="num">+9.3</td>
+          <td class="num" style="color:#666">+36.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">26</td>
+          <td class="player-name">Wendell Carter Jr., Desmond Bane, Franz Wagner, Anthony Black, Tristan da Silva</td>
+          <td class="num">61</td>
+          <td class="num">+41.0</td>
+          <td class="num">+4.4</td>
+          <td class="num" style="color:#666">+36.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.0</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">27</td>
+          <td class="player-name">Dennis Schröder, Domantas Sabonis, Malik Monk, Nique Clifford, Dylan Cardwell</td>
+          <td class="num">56</td>
+          <td class="num">+33.9</td>
+          <td class="num">-1.8</td>
+          <td class="num" style="color:#666">+35.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.6</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">28</td>
+          <td class="player-name">Donovan Mitchell, Jarrett Allen, Dean Wade, Sam Merrill, Jaylon Tyson</td>
+          <td class="num">108</td>
+          <td class="num">+46.3</td>
+          <td class="num">+10.7</td>
+          <td class="num" style="color:#666">+35.6</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.3</span></td>
+          <td class="num"><span style="color:#ef4444">18%</span></td>
+        </tr>
+        <tr>
+          <td class="num">29</td>
+          <td class="player-name">Keldon Johnson, Devin Vassell, Victor Wembanyama, Stephon Castle, Dylan Harper</td>
+          <td class="num">74</td>
+          <td class="num">+48.6</td>
+          <td class="num">+13.3</td>
+          <td class="num" style="color:#666">+35.4</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">30</td>
+          <td class="player-name">Goga Bitadze, Franz Wagner, Jalen Suggs, Anthony Black, Tristan da Silva</td>
+          <td class="num">109</td>
+          <td class="num">+41.3</td>
+          <td class="num">+6.2</td>
+          <td class="num" style="color:#666">+35.1</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.3</span></td>
+          <td class="num"><span style="color:#ef4444">18%</span></td>
+        </tr>
+        <tr>
+          <td class="num">31</td>
+          <td class="player-name">Mike Conley, Julius Randle, Naz Reid, Jaden McDaniels, Jaylen Clark</td>
+          <td class="num">50</td>
+          <td class="num">+38.0</td>
+          <td class="num">+3.1</td>
+          <td class="num" style="color:#666">+34.9</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.2</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">32</td>
+          <td class="player-name">Wendell Carter Jr., Desmond Bane, Paolo Banchero, Anthony Black, Jase Richardson</td>
+          <td class="num">76</td>
+          <td class="num">+38.2</td>
+          <td class="num">+3.6</td>
+          <td class="num" style="color:#666">+34.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">33</td>
+          <td class="player-name">Kelly Oubre Jr., Quentin Grimes, Tyrese Maxey, Jabari Walker, Adem Bona</td>
+          <td class="num">79</td>
+          <td class="num">+35.4</td>
+          <td class="num">+1.7</td>
+          <td class="num" style="color:#666">+33.8</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.6</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">34</td>
+          <td class="player-name">Giannis Antetokounmpo, Bobby Portis, Kevin Porter Jr., Ryan Rollins, AJ Green</td>
+          <td class="num">86</td>
+          <td class="num">+36.0</td>
+          <td class="num">+2.5</td>
+          <td class="num" style="color:#666">+33.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.9</span></td>
+          <td class="num"><span style="color:#ef4444">15%</span></td>
+        </tr>
+        <tr>
+          <td class="num">35</td>
+          <td class="player-name">Giannis Antetokounmpo, Myles Turner, Kyle Kuzma, Ryan Rollins, AJ Green</td>
+          <td class="num">168</td>
+          <td class="num">+35.1</td>
+          <td class="num">+1.8</td>
+          <td class="num" style="color:#666">+33.3</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.4</span></td>
+          <td class="num"><span style="color:#f59e0b">25%</span></td>
+        </tr>
+        <tr>
+          <td class="num">36</td>
+          <td class="player-name">Anthony Davis, P.J. Washington, Naji Marshall, Cooper Flagg, Ryan Nembhard</td>
+          <td class="num">88</td>
+          <td class="num">+33.0</td>
+          <td class="num">+0.3</td>
+          <td class="num" style="color:#666">+32.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.9</span></td>
+          <td class="num"><span style="color:#ef4444">15%</span></td>
+        </tr>
+        <tr>
+          <td class="num">37</td>
+          <td class="player-name">Al Horford, Stephen Curry, Draymond Green, Moses Moody, Brandin Podziemski</td>
+          <td class="num">72</td>
+          <td class="num">+34.7</td>
+          <td class="num">+2.2</td>
+          <td class="num" style="color:#666">+32.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.1</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">38</td>
+          <td class="player-name">Russell Westbrook, DeMar DeRozan, Zach LaVine, Precious Achiuwa, Keegan Murray</td>
+          <td class="num">61</td>
+          <td class="num">+24.6</td>
+          <td class="num">-7.7</td>
+          <td class="num" style="color:#666">+32.3</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.5</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">39</td>
+          <td class="player-name">Tobias Harris, Duncan Robinson, Cade Cunningham, Jalen Duren, Marcus Sasser</td>
+          <td class="num">78</td>
+          <td class="num">+41.0</td>
+          <td class="num">+9.5</td>
+          <td class="num" style="color:#666">+31.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.2</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">40</td>
+          <td class="player-name">Derrick White, Anfernee Simons, Neemias Queta, Jordan Walsh, Hugo González</td>
+          <td class="num">56</td>
+          <td class="num">+37.5</td>
+          <td class="num">+6.5</td>
+          <td class="num" style="color:#666">+31.0</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.1</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">41</td>
+          <td class="player-name">RJ Barrett, Immanuel Quickley, Scottie Barnes, Sandro Mamukelashvili, Gradey Dick</td>
+          <td class="num">84</td>
+          <td class="num">+36.9</td>
+          <td class="num">+5.9</td>
+          <td class="num" style="color:#666">+31.0</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.5</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">42</td>
+          <td class="player-name">Tim Hardaway Jr., Nikola Jokić, Jamal Murray, Cameron Johnson, Peyton Watson</td>
+          <td class="num">72</td>
+          <td class="num">+38.9</td>
+          <td class="num">+8.3</td>
+          <td class="num" style="color:#666">+30.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.9</span></td>
+          <td class="num"><span style="color:#ef4444">13%</span></td>
+        </tr>
+        <tr>
+          <td class="num">43</td>
+          <td class="player-name">Joel Embiid, Kelly Oubre Jr., Tyrese Maxey, Trendon Watford, VJ Edgecombe</td>
+          <td class="num">52</td>
+          <td class="num">+32.7</td>
+          <td class="num">+2.1</td>
+          <td class="num" style="color:#666">+30.6</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.9</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">44</td>
+          <td class="player-name">Kevin Durant, Clint Capela, Jabari Smith Jr., Tari Eason, Reed Sheppard</td>
+          <td class="num">64</td>
+          <td class="num">+35.9</td>
+          <td class="num">+5.5</td>
+          <td class="num" style="color:#666">+30.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.5</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">45</td>
+          <td class="player-name">Tim Hardaway Jr., Jamal Murray, Zeke Nnaji, Peyton Watson, Spencer Jones</td>
+          <td class="num">50</td>
+          <td class="num">+32.0</td>
+          <td class="num">+1.8</td>
+          <td class="num" style="color:#666">+30.2</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.7</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">46</td>
+          <td class="player-name">OG Anunoby, Mikal Bridges, Jalen Brunson, Mitchell Robinson, Miles McBride</td>
+          <td class="num">53</td>
+          <td class="num">+37.7</td>
+          <td class="num">+7.6</td>
+          <td class="num" style="color:#666">+30.2</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.9</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">47</td>
+          <td class="player-name">T.J. McConnell, Aaron Nesmith, Micah Potter, Jarace Walker, Ben Sheppard</td>
+          <td class="num">54</td>
+          <td class="num">+31.5</td>
+          <td class="num">+1.4</td>
+          <td class="num" style="color:#666">+30.1</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.9</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">48</td>
+          <td class="player-name">Bam Adebayo, Dru Smith, Nikola Jović, Jaime Jaquez Jr., Simone Fontecchio</td>
+          <td class="num">153</td>
+          <td class="num">+37.2</td>
+          <td class="num">+7.2</td>
+          <td class="num" style="color:#666">+30.1</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+7.0</span></td>
+          <td class="num"><span style="color:#ef4444">23%</span></td>
+        </tr>
+        <tr>
+          <td class="num">49</td>
+          <td class="player-name">Nikola Vučević, Kevin Huerter, Tre Jones, Josh Giddey, Matas Buzelis</td>
+          <td class="num">62</td>
+          <td class="num">+29.0</td>
+          <td class="num">-0.9</td>
+          <td class="num" style="color:#666">+29.9</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.3</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">50</td>
+          <td class="player-name">Dwight Powell, Caleb Martin, Naji Marshall, Max Christie, Cooper Flagg</td>
+          <td class="num">86</td>
+          <td class="num">+30.2</td>
+          <td class="num">+0.5</td>
+          <td class="num" style="color:#666">+29.8</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.4</span></td>
+          <td class="num"><span style="color:#ef4444">15%</span></td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PAIRS -->
+<div id="pairs" class="section">
+  <div class="section-title">Pairwise compatibility</div>
+  <div class="section-desc">Compatibility = pair net rating minus sum of individual RAPMs. Shrunk = sample-size adjusted estimate (k=300). Min 60 shared possessions.</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th>
+      <th>Player A</th>
+      <th>Player B</th>
+      <th style="text-align:right">Poss</th>
+      <th style="text-align:right">RAPM A</th>
+      <th style="text-align:right">RAPM B</th>
+      <th style="text-align:right">Raw compat</th>
+      <th style="text-align:right">Shrunk</th>
+      <th style="text-align:right">Confidence</th>
+    </tr></thead>
+    <tbody>
+      
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">Jaren Jackson Jr.</td>
+          <td class="player-name">Javon Small</td>
+          <td class="num">65</td>
+          <td class="num">+0.06</td>
+          <td class="num">+0.06</td>
+          <td class="num" style="color:#666">+61.42</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.94</span></td>
+          <td class="num"><span style="color:#ef4444">18%</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">Cedric Coward</td>
+          <td class="player-name">Javon Small</td>
+          <td class="num">65</td>
+          <td class="num">+0.96</td>
+          <td class="num">+0.06</td>
+          <td class="num" style="color:#666">+60.51</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.78</span></td>
+          <td class="num"><span style="color:#ef4444">18%</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Lonzo Ball</td>
+          <td class="player-name">Jarrett Allen</td>
+          <td class="num">74</td>
+          <td class="num">+0.76</td>
+          <td class="num">+2.63</td>
+          <td class="num" style="color:#666">+57.41</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+11.36</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Amir Coffey</td>
+          <td class="player-name">Rasheer Fleming</td>
+          <td class="num">75</td>
+          <td class="num">+0.02</td>
+          <td class="num">+0.35</td>
+          <td class="num" style="color:#666">+52.96</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.59</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Ivica Zubac</td>
+          <td class="player-name">Jordan Miller</td>
+          <td class="num">90</td>
+          <td class="num">-0.49</td>
+          <td class="num">+1.09</td>
+          <td class="num" style="color:#666">+49.40</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+11.40</span></td>
+          <td class="num"><span style="color:#ef4444">23%</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">Derrick Jones Jr.</td>
+          <td class="player-name">Yanic Konan Niederhäuser</td>
+          <td class="num">71</td>
+          <td class="num">+0.90</td>
+          <td class="num">+0.58</td>
+          <td class="num" style="color:#666">+47.82</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.15</span></td>
+          <td class="num"><span style="color:#ef4444">19%</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">Alex Caruso</td>
+          <td class="player-name">Aaron Wiggins</td>
+          <td class="num">73</td>
+          <td class="num">+3.06</td>
+          <td class="num">-0.07</td>
+          <td class="num" style="color:#666">+47.70</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.34</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Lonzo Ball</td>
+          <td class="player-name">Donovan Mitchell</td>
+          <td class="num">112</td>
+          <td class="num">+0.76</td>
+          <td class="num">+3.63</td>
+          <td class="num" style="color:#666">+46.51</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+12.64</span></td>
+          <td class="num"><span style="color:#f59e0b">27%</span></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">Alex Caruso</td>
+          <td class="player-name">Isaiah Joe</td>
+          <td class="num">245</td>
+          <td class="num">+3.06</td>
+          <td class="num">+1.60</td>
+          <td class="num" style="color:#666">+45.55</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+20.48</span></td>
+          <td class="num"><span style="color:#f59e0b">45%</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Santi Aldama</td>
+          <td class="player-name">Zach Edey</td>
+          <td class="num">73</td>
+          <td class="num">-0.33</td>
+          <td class="num">+1.66</td>
+          <td class="num" style="color:#666">+45.25</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.86</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">Tyus Jones</td>
+          <td class="player-name">Jonathan Isaac</td>
+          <td class="num">84</td>
+          <td class="num">-1.03</td>
+          <td class="num">+0.35</td>
+          <td class="num" style="color:#666">+43.54</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.52</span></td>
+          <td class="num"><span style="color:#ef4444">22%</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Alex Caruso</td>
+          <td class="player-name">Isaiah Hartenstein</td>
+          <td class="num">139</td>
+          <td class="num">+3.06</td>
+          <td class="num">+2.22</td>
+          <td class="num" style="color:#666">+42.92</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+13.59</span></td>
+          <td class="num"><span style="color:#f59e0b">32%</span></td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td class="player-name">D&#x27;Angelo Russell</td>
+          <td class="player-name">Naji Marshall</td>
+          <td class="num">84</td>
+          <td class="num">+0.17</td>
+          <td class="num">+0.47</td>
+          <td class="num" style="color:#666">+42.23</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.24</span></td>
+          <td class="num"><span style="color:#ef4444">22%</span></td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td class="player-name">Jonathan Isaac</td>
+          <td class="player-name">Wendell Carter Jr.</td>
+          <td class="num">84</td>
+          <td class="num">+0.35</td>
+          <td class="num">+0.55</td>
+          <td class="num" style="color:#666">+41.96</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.18</span></td>
+          <td class="num"><span style="color:#ef4444">22%</span></td>
+        </tr>
+        <tr>
+          <td class="num">15</td>
+          <td class="player-name">Isaiah Joe</td>
+          <td class="player-name">Jared McCain</td>
+          <td class="num">116</td>
+          <td class="num">+1.60</td>
+          <td class="num">+0.99</td>
+          <td class="num" style="color:#666">+41.38</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+11.54</span></td>
+          <td class="num"><span style="color:#f59e0b">28%</span></td>
+        </tr>
+        <tr>
+          <td class="num">16</td>
+          <td class="player-name">Victor Wembanyama</td>
+          <td class="player-name">Dylan Harper</td>
+          <td class="num">503</td>
+          <td class="num">+5.16</td>
+          <td class="num">+2.35</td>
+          <td class="num" style="color:#666">+41.00</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+25.68</span></td>
+          <td class="num"><span style="color:#22c55e">63%</span></td>
+        </tr>
+        <tr>
+          <td class="num">17</td>
+          <td class="player-name">Alex Caruso</td>
+          <td class="player-name">Ajay Mitchell</td>
+          <td class="num">262</td>
+          <td class="num">+3.06</td>
+          <td class="num">+2.58</td>
+          <td class="num" style="color:#666">+40.92</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+19.08</span></td>
+          <td class="num"><span style="color:#f59e0b">47%</span></td>
+        </tr>
+        <tr>
+          <td class="num">18</td>
+          <td class="player-name">Jonathan Isaac</td>
+          <td class="player-name">Anthony Black</td>
+          <td class="num">84</td>
+          <td class="num">+0.35</td>
+          <td class="num">+1.74</td>
+          <td class="num" style="color:#666">+40.76</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.92</span></td>
+          <td class="num"><span style="color:#ef4444">22%</span></td>
+        </tr>
+        <tr>
+          <td class="num">19</td>
+          <td class="player-name">Isaiah Hartenstein</td>
+          <td class="player-name">Jared McCain</td>
+          <td class="num">116</td>
+          <td class="num">+2.22</td>
+          <td class="num">+0.99</td>
+          <td class="num" style="color:#666">+40.75</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+11.36</span></td>
+          <td class="num"><span style="color:#f59e0b">28%</span></td>
+        </tr>
+        <tr>
+          <td class="num">20</td>
+          <td class="player-name">Sam Hauser</td>
+          <td class="player-name">Nikola Vučević</td>
+          <td class="num">111</td>
+          <td class="num">+1.53</td>
+          <td class="num">-0.52</td>
+          <td class="num" style="color:#666">+40.43</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.92</span></td>
+          <td class="num"><span style="color:#f59e0b">27%</span></td>
+        </tr>
+        <tr>
+          <td class="num">21</td>
+          <td class="player-name">Kevin Huerter</td>
+          <td class="player-name">Coby White</td>
+          <td class="num">62</td>
+          <td class="num">+0.91</td>
+          <td class="num">+0.85</td>
+          <td class="num" style="color:#666">+40.17</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.88</span></td>
+          <td class="num"><span style="color:#ef4444">17%</span></td>
+        </tr>
+        <tr>
+          <td class="num">22</td>
+          <td class="player-name">Josh Hart</td>
+          <td class="player-name">Jose Alvarado</td>
+          <td class="num">74</td>
+          <td class="num">+1.43</td>
+          <td class="num">+1.71</td>
+          <td class="num" style="color:#666">+40.11</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+7.94</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">23</td>
+          <td class="player-name">Corey Kispert</td>
+          <td class="player-name">Bilal Coulibaly</td>
+          <td class="num">76</td>
+          <td class="num">-0.25</td>
+          <td class="num">-1.33</td>
+          <td class="num" style="color:#666">+39.74</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.03</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">24</td>
+          <td class="player-name">Corey Kispert</td>
+          <td class="player-name">Alex Sarr</td>
+          <td class="num">76</td>
+          <td class="num">-0.25</td>
+          <td class="num">-1.02</td>
+          <td class="num" style="color:#666">+39.43</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+7.97</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">25</td>
+          <td class="player-name">Pascal Siakam</td>
+          <td class="player-name">T.J. McConnell</td>
+          <td class="num">150</td>
+          <td class="num">+1.04</td>
+          <td class="num">+1.30</td>
+          <td class="num" style="color:#666">+38.99</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+13.00</span></td>
+          <td class="num"><span style="color:#f59e0b">33%</span></td>
+        </tr>
+        <tr>
+          <td class="num">26</td>
+          <td class="player-name">Chet Holmgren</td>
+          <td class="player-name">Jared McCain</td>
+          <td class="num">116</td>
+          <td class="num">+4.06</td>
+          <td class="num">+0.99</td>
+          <td class="num" style="color:#666">+38.91</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.85</span></td>
+          <td class="num"><span style="color:#f59e0b">28%</span></td>
+        </tr>
+        <tr>
+          <td class="num">27</td>
+          <td class="player-name">Dean Wade</td>
+          <td class="player-name">Craig Porter Jr.</td>
+          <td class="num">101</td>
+          <td class="num">+2.24</td>
+          <td class="num">+0.56</td>
+          <td class="num" style="color:#666">+38.78</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+9.77</span></td>
+          <td class="num"><span style="color:#f59e0b">25%</span></td>
+        </tr>
+        <tr>
+          <td class="num">28</td>
+          <td class="player-name">Cade Cunningham</td>
+          <td class="player-name">Marcus Sasser</td>
+          <td class="num">119</td>
+          <td class="num">+2.31</td>
+          <td class="num">+1.27</td>
+          <td class="num" style="color:#666">+38.43</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.92</span></td>
+          <td class="num"><span style="color:#f59e0b">28%</span></td>
+        </tr>
+        <tr>
+          <td class="num">29</td>
+          <td class="player-name">Lonzo Ball</td>
+          <td class="player-name">Nae&#x27;Qwan Tomlin</td>
+          <td class="num">62</td>
+          <td class="num">+0.76</td>
+          <td class="num">+0.11</td>
+          <td class="num" style="color:#666">+37.84</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.48</span></td>
+          <td class="num"><span style="color:#ef4444">17%</span></td>
+        </tr>
+        <tr>
+          <td class="num">30</td>
+          <td class="player-name">Keegan Murray</td>
+          <td class="player-name">Dennis Schröder</td>
+          <td class="num">94</td>
+          <td class="num">-0.46</td>
+          <td class="num">-0.74</td>
+          <td class="num" style="color:#666">+37.37</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.92</span></td>
+          <td class="num"><span style="color:#ef4444">24%</span></td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+
+</body>
+</html>

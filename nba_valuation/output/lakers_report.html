@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lakers — NBA Valuation 2025-26</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary:  #FDB927;
+    --secondary:#552583;
+    --bg:       #0e0f11;
+    --surface:  #16181c;
+    --border:   #2a2d35;
+    --text:     #e8eaf0;
+    --muted:    #6b7280;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6; }
+  .header {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  }
+  .header-inner { padding: 40px 40px 32px; }
+  .header h1 { font-size:34px; font-weight:300; letter-spacing:-0.5px; color:#fff; }
+  .header h1 strong { font-weight:700; }
+  .header p { color:rgba(255,255,255,0.65); margin-top:6px; font-size:13px; }
+  .summary-cards {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:16px; padding:28px 40px; border-bottom:1px solid var(--border);
+  }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:18px 20px; }
+  .card.accent { border-top:3px solid var(--primary); }
+  .card .label { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+  .card .value { font-size:24px; font-weight:600; margin-top:4px; color:var(--text); }
+  .card .sub { font-size:12px; color:var(--muted); margin-top:2px; }
+  nav { display:flex; gap:4px; padding:20px 40px 0; border-bottom:1px solid var(--border); }
+  nav button {
+    background:none; border:none; color:var(--muted);
+    padding:10px 18px; font-family:'DM Sans',sans-serif; font-size:13px;
+    cursor:pointer; border-bottom:2px solid transparent; transition:all .15s;
+  }
+  nav button:hover { color:var(--text); }
+  nav button.active { color:var(--primary); border-bottom-color:var(--primary); }
+  .section { display:none; padding:32px 40px; }
+  .section.active { display:block; }
+  .section-title { font-size:18px; font-weight:500; margin-bottom:6px; }
+  .section-desc { color:var(--muted); font-size:13px; margin-bottom:20px; }
+  .data-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .data-table th {
+    text-align:left; padding:10px 12px; color:var(--muted);
+    font-size:11px; text-transform:uppercase; letter-spacing:0.5px;
+    font-weight:500; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  .data-table td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .data-table tr:hover td { background:var(--surface); }
+  .data-table td.num { text-align:right; font-family:'DM Mono',monospace; white-space:nowrap; }
+  .data-table td.player-name { font-weight:500; white-space:nowrap; }
+  .flag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:4px; margin:2px; line-height:1.4; }
+  .flag-green { background:#052e16; color:#86efac; }
+  .flag-red   { background:#2c0a0a; color:#fca5a5; }
+  @media(max-width:900px) {
+    .summary-cards { grid-template-columns:1fr 1fr; }
+    .header-inner, nav, .section { padding-left:20px; padding-right:20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1><strong>Lakers</strong> Valuation Report</h1>
+    <p>Season 2025-26 &nbsp;·&nbsp; RAPM + tracking + lineup synergy &nbsp;·&nbsp; split at 2025-12-15</p>
+  </div>
+</div>
+
+<div class="summary-cards">
+  <div class="card accent">
+    <div class="label">Best player (RAPM)</div>
+    <div class="value" style="font-size:16px;margin-top:6px">Marcus Smart</div>
+    <div class="sub">+1.87 RAPM</div>
+  </div>
+  <div class="card">
+    <div class="label">Roster rated</div>
+    <div class="value">12</div>
+    <div class="sub">players with data</div>
+  </div>
+  <div class="card">
+    <div class="label">Team avg RAPM</div>
+    <div class="value" style="color:#a7f3d0">+0.12</div>
+    <div class="sub">across roster</div>
+  </div>
+  <div class="card">
+    <div class="label">Best lineup</div>
+    <div class="value" style="font-size:11px;margin-top:8px;line-height:1.5">Marcus Smart, Deandre Ayton, Luka Dončić, Rui Hach</div>
+    <div class="sub">by shrunk synergy</div>
+  </div>
+</div>
+
+<nav>
+  <button class="active" onclick="show('roster', this)">Roster</button>
+  <button onclick="show('lineups', this)">Lineups</button>
+  <button onclick="show('pairs', this)">Pairings</button>
+  <button onclick="show('split', this)">Early vs Recent</button>
+</nav>
+
+<!-- ROSTER -->
+<div id="roster" class="section active">
+  <div class="section-title">Lakers roster ratings</div>
+  <div class="section-desc">RAPM = on/off impact per 100 possessions. Support = how well tracking explains the RAPM. Delta = recent minus early RAPM (if split enabled).</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th><th>Player</th>
+      <th style="text-align:right">RAPM</th>
+      <th style="text-align:right">Prior</th>
+      <th style="text-align:right">Support</th>
+      <th style="text-align:right">Off</th>
+      <th style="text-align:right">Def</th>
+      <th style="text-align:right">Delta</th>
+      <th>Flags</th>
+    </tr></thead>
+    <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.87</span></td>
+          <td class="num">-0.68</td>
+          <td class="num"><span style="color:#f59e0b">64</span></td>
+          <td class="num">63</td>
+          <td class="num">66</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.53</span></td>
+          <td class="flags"><span class="flag flag-green">Elite shot deterrence — opponents shoot poorly (80th pct)</span><span class="flag flag-green">Disruptive defender — deflections (91th pct)</span><span class="flag flag-red">Poor shooting efficiency despite positive RAPM (26th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.06</span></td>
+          <td class="num">+2.39</td>
+          <td class="num"><span style="color:#f59e0b">61</span></td>
+          <td class="num">62</td>
+          <td class="num">60</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.29</span></td>
+          <td class="flags"><span class="flag flag-green">High contest volume (80th pct)</span><span class="flag flag-green">Disruptive defender — deflections (95th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.96</span></td>
+          <td class="num">-0.33</td>
+          <td class="num"><span style="color:#22c55e">74</span></td>
+          <td class="num">78</td>
+          <td class="num">69</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.40</span></td>
+          <td class="flags"><span class="flag flag-green">Opponents shoot well below their average when guarded (75th pct)</span><span class="flag flag-green">High contest volume (85th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (93th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 99th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Austin Reaves</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.89</span></td>
+          <td class="num">+0.79</td>
+          <td class="num"><span style="color:#f59e0b">60</span></td>
+          <td class="num">70</td>
+          <td class="num">48</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.13</span></td>
+          <td class="flags"><span class="flag flag-red">Opponents shoot well against this player (31th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Rui Hachimura</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.35</span></td>
+          <td class="num">-1.11</td>
+          <td class="num"><span style="color:#f59e0b">52</span></td>
+          <td class="num">65</td>
+          <td class="num">36</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.52</span></td>
+          <td class="flags"><span class="flag flag-green">High shooting efficiency (EFG% 86th pct)</span><span class="flag flag-red">Opponents shoot well against this player (15th pct)</span><span class="flag flag-red">Opponents shoot above their average when guarded (16th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">Drew Timme</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.32</span></td>
+          <td class="num">-0.77</td>
+          <td class="num"><span style="color:#f59e0b">53</span></td>
+          <td class="num">68</td>
+          <td class="num">35</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.59</span></td>
+          <td class="flags"><span class="flag flag-green">High shooting efficiency (EFG% 96th pct)</span><span class="flag flag-red">Low contest volume — positive RAPM not from active defense</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.12</span></td>
+          <td class="num">+0.67</td>
+          <td class="num"><span style="color:#f59e0b">51</span></td>
+          <td class="num">55</td>
+          <td class="num">48</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.03</span></td>
+          <td class="flags"></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Jarred Vanderbilt</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.24</span></td>
+          <td class="num">-1.11</td>
+          <td class="num"><span style="color:#f59e0b">48</span></td>
+          <td class="num">50</td>
+          <td class="num">46</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.38</span></td>
+          <td class="flags"></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">Luke Kennard</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.63</span></td>
+          <td class="num">-0.94</td>
+          <td class="num"><span style="color:#f59e0b">48</span></td>
+          <td class="num">67</td>
+          <td class="num">25</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.35</span></td>
+          <td class="flags"><span class="flag flag-green">High shooting efficiency (EFG% 97th pct)</span><span class="flag flag-red">Opponents shoot well against this player (22th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Dalton Knecht</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.66</span></td>
+          <td class="num">-1.49</td>
+          <td class="num"><span style="color:#ef4444">32</span></td>
+          <td class="num">38</td>
+          <td class="num">23</td>
+          <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.48</span></td>
+          <td class="flags"><span class="flag flag-red">Opponents shoot well against this player (28th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">Deandre Ayton</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.94</span></td>
+          <td class="num">-0.33</td>
+          <td class="num"><span style="color:#f59e0b">65</span></td>
+          <td class="num">69</td>
+          <td class="num">59</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.65</span></td>
+          <td class="flags"><span class="flag flag-green">High contest volume (95th pct)</span><span class="flag flag-green">Elite off-ball value — screen assists (99th pct)</span><span class="flag flag-green">High shooting efficiency (EFG% 96th pct)</span><span class="flag flag-red">Opponents shoot well against this player (28th pct)</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Jake LaRavia</td>
+          <td class="num"><span style="color:#ef4444;font-weight:600">-1.71</span></td>
+          <td class="num">-0.86</td>
+          <td class="num"><span style="color:#f59e0b">53</span></td>
+          <td class="num">55</td>
+          <td class="num">51</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.22</span></td>
+          <td class="flags"><span class="flag flag-green">Disruptive defender — deflections (93th pct)</span></td>
+        </tr></tbody>
+  </table>
+</div>
+
+<!-- LINEUPS -->
+<div id="lineups" class="section">
+  <div class="section-title">Best Lakers lineups</div>
+  <div class="section-desc">Synergy delta = actual net rating minus sum of individual RAPMs. Shrunk adjusts for sample size.</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th><th>Players</th>
+      <th style="text-align:right">Poss</th>
+      <th style="text-align:right">Actual NR</th>
+      <th style="text-align:right">Raw delta</th>
+      <th style="text-align:right">Shrunk</th>
+      <th style="text-align:right">Confidence</th>
+    </tr></thead>
+    <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">Marcus Smart, Deandre Ayton, Luka Dončić, Rui Hachimura, Austin Reaves</td>
+          <td class="num">220</td>
+          <td class="num">+26.8</td>
+          <td class="num" style="color:#666">+23.6</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+7.2</span></td>
+          <td class="num"><span style="color:#f59e0b">31%</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">LeBron James, Marcus Smart, Deandre Ayton, Luka Dončić, Austin Reaves</td>
+          <td class="num">346</td>
+          <td class="num">+12.7</td>
+          <td class="num" style="color:#666">+9.7</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.0</span></td>
+          <td class="num"><span style="color:#f59e0b">41%</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Deandre Ayton, Luka Dončić, Rui Hachimura, Austin Reaves, Jake LaRavia</td>
+          <td class="num">55</td>
+          <td class="num">+38.2</td>
+          <td class="num" style="color:#666">+38.5</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.8</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Marcus Smart, Luka Dončić, Rui Hachimura, Jaxson Hayes, Austin Reaves</td>
+          <td class="num">91</td>
+          <td class="num">+16.5</td>
+          <td class="num" style="color:#666">+11.3</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+1.8</span></td>
+          <td class="num"><span style="color:#ef4444">15%</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Luke Kennard, Luka Dončić, Rui Hachimura, Jaxson Hayes, Austin Reaves</td>
+          <td class="num">58</td>
+          <td class="num">+6.9</td>
+          <td class="num" style="color:#666">+4.3</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+0.4</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">LeBron James, Luka Dončić, Rui Hachimura, Jaxson Hayes, Austin Reaves</td>
+          <td class="num">54</td>
+          <td class="num">-1.9</td>
+          <td class="num" style="color:#666">-5.2</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-0.5</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">Marcus Smart, Deandre Ayton, Luka Dončić, Rui Hachimura, Jake LaRavia</td>
+          <td class="num">123</td>
+          <td class="num">-5.7</td>
+          <td class="num" style="color:#666">-6.3</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-1.2</span></td>
+          <td class="num"><span style="color:#ef4444">20%</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Jarred Vanderbilt, Deandre Ayton, Rui Hachimura, Austin Reaves, Jake LaRavia</td>
+          <td class="num">51</td>
+          <td class="num">-15.7</td>
+          <td class="num" style="color:#666">-14.1</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-1.3</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">LeBron James, Marcus Smart, Luka Dončić, Jaxson Hayes, Jake LaRavia</td>
+          <td class="num">65</td>
+          <td class="num">-9.2</td>
+          <td class="num" style="color:#666">-11.5</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-1.3</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Luka Dončić, Rui Hachimura, Jaxson Hayes, Austin Reaves, Jake LaRavia</td>
+          <td class="num">53</td>
+          <td class="num">-28.3</td>
+          <td class="num" style="color:#666">-29.9</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-2.9</span></td>
+          <td class="num"><span style="color:#ef4444">10%</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">LeBron James, Marcus Smart, Deandre Ayton, Luka Dončić, Jake LaRavia</td>
+          <td class="num">408</td>
+          <td class="num">-6.1</td>
+          <td class="num" style="color:#666">-6.5</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-2.9</span></td>
+          <td class="num"><span style="color:#f59e0b">45%</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Marcus Smart, Jarred Vanderbilt, Deandre Ayton, Luka Dončić, Jake LaRavia</td>
+          <td class="num">94</td>
+          <td class="num">-19.1</td>
+          <td class="num" style="color:#666">-19.2</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-3.0</span></td>
+          <td class="num"><span style="color:#ef4444">16%</span></td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td class="player-name">LeBron James, Marcus Smart, Deandre Ayton, Luka Dončić, Rui Hachimura</td>
+          <td class="num">84</td>
+          <td class="num">-22.6</td>
+          <td class="num" style="color:#666">-25.1</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-3.6</span></td>
+          <td class="num"><span style="color:#ef4444">14%</span></td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td class="player-name">LeBron James, Deandre Ayton, Luka Dončić, Rui Hachimura, Austin Reaves</td>
+          <td class="num">225</td>
+          <td class="num">-12.9</td>
+          <td class="num" style="color:#666">-14.4</td>
+          <td class="num"><span style="color:#fca5a5;font-weight:600">-4.5</span></td>
+          <td class="num"><span style="color:#f59e0b">31%</span></td>
+        </tr></tbody>
+  </table>
+</div>
+
+<!-- PAIRS -->
+<div id="pairs" class="section">
+  <div class="section-title">Best Lakers pairings</div>
+  <div class="section-desc">Compatibility = pair net rating minus sum of individual RAPMs. Shrunk adjusts for sample size.</div>
+  <table class="data-table">
+    <thead><tr>
+      <th>#</th><th>Player A</th><th>Player B</th>
+      <th style="text-align:right">Poss</th>
+      <th style="text-align:right">RAPM A</th>
+      <th style="text-align:right">RAPM B</th>
+      <th style="text-align:right">Raw compat</th>
+      <th style="text-align:right">Shrunk</th>
+      <th style="text-align:right">Conf</th>
+    </tr></thead>
+    <tbody>
+        <tr>
+          <td class="num">1</td>
+          <td class="player-name">Austin Reaves</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">829</td>
+          <td class="num">+0.89</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+14.00</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+10.28</span></td>
+          <td class="num"><span style="color:#22c55e">73%</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td class="player-name">Rui Hachimura</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">839</td>
+          <td class="num">+0.35</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+11.49</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+8.46</span></td>
+          <td class="num"><span style="color:#22c55e">74%</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td class="player-name">Deandre Ayton</td>
+          <td class="player-name">Drew Timme</td>
+          <td class="num">40</td>
+          <td class="num">-0.94</td>
+          <td class="num">+0.32</td>
+          <td class="num" style="color:#666">+58.12</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.84</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td class="player-name">Jarred Vanderbilt</td>
+          <td class="player-name">Drew Timme</td>
+          <td class="num">40</td>
+          <td class="num">-0.24</td>
+          <td class="num">+0.32</td>
+          <td class="num" style="color:#666">+57.42</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.76</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">5</td>
+          <td class="player-name">Drew Timme</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num">40</td>
+          <td class="num">+0.32</td>
+          <td class="num">+0.12</td>
+          <td class="num" style="color:#666">+57.06</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.71</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">6</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">433</td>
+          <td class="num">+0.96</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+11.03</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.52</span></td>
+          <td class="num"><span style="color:#22c55e">59%</span></td>
+        </tr>
+        <tr>
+          <td class="num">7</td>
+          <td class="player-name">Drew Timme</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">40</td>
+          <td class="num">+0.32</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+55.31</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+6.51</span></td>
+          <td class="num"><span style="color:#ef4444">12%</span></td>
+        </tr>
+        <tr>
+          <td class="num">8</td>
+          <td class="player-name">Rui Hachimura</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="num">618</td>
+          <td class="num">+0.35</td>
+          <td class="num">+0.96</td>
+          <td class="num" style="color:#666">+7.76</td>
+          <td class="num"><span style="color:#22c55e;font-weight:600">+5.22</span></td>
+          <td class="num"><span style="color:#22c55e">67%</span></td>
+        </tr>
+        <tr>
+          <td class="num">9</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="player-name">Austin Reaves</td>
+          <td class="num">1354</td>
+          <td class="num">+1.06</td>
+          <td class="num">+0.89</td>
+          <td class="num" style="color:#666">+5.58</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.57</span></td>
+          <td class="num"><span style="color:#22c55e">82%</span></td>
+        </tr>
+        <tr>
+          <td class="num">10</td>
+          <td class="player-name">Jarred Vanderbilt</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num">144</td>
+          <td class="num">-0.24</td>
+          <td class="num">+0.12</td>
+          <td class="num" style="color:#666">+14.01</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.54</span></td>
+          <td class="num"><span style="color:#f59e0b">32%</span></td>
+        </tr>
+        <tr>
+          <td class="num">11</td>
+          <td class="player-name">Luke Kennard</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="num">139</td>
+          <td class="num">-0.63</td>
+          <td class="num">+0.96</td>
+          <td class="num" style="color:#666">+14.06</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+4.45</span></td>
+          <td class="num"><span style="color:#f59e0b">32%</span></td>
+        </tr>
+        <tr>
+          <td class="num">12</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="num">767</td>
+          <td class="num">+1.06</td>
+          <td class="num">+0.96</td>
+          <td class="num" style="color:#666">+5.28</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.80</span></td>
+          <td class="num"><span style="color:#22c55e">72%</span></td>
+        </tr>
+        <tr>
+          <td class="num">13</td>
+          <td class="player-name">Luke Kennard</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="num">224</td>
+          <td class="num">-0.63</td>
+          <td class="num">+1.06</td>
+          <td class="num" style="color:#666">+8.49</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.63</span></td>
+          <td class="num"><span style="color:#f59e0b">43%</span></td>
+        </tr>
+        <tr>
+          <td class="num">14</td>
+          <td class="player-name">Luke Kennard</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num">31</td>
+          <td class="num">-0.63</td>
+          <td class="num">+0.12</td>
+          <td class="num" style="color:#666">+35.99</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+3.37</span></td>
+          <td class="num"><span style="color:#ef4444">9%</span></td>
+        </tr>
+        <tr>
+          <td class="num">15</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="player-name">Jake LaRavia</td>
+          <td class="num">438</td>
+          <td class="num">+0.96</td>
+          <td class="num">-1.71</td>
+          <td class="num" style="color:#666">+4.86</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.88</span></td>
+          <td class="num"><span style="color:#22c55e">59%</span></td>
+        </tr>
+        <tr>
+          <td class="num">16</td>
+          <td class="player-name">Jaxson Hayes</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num">340</td>
+          <td class="num">+0.96</td>
+          <td class="num">+0.12</td>
+          <td class="num" style="color:#666">+5.39</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.86</span></td>
+          <td class="num"><span style="color:#22c55e">53%</span></td>
+        </tr>
+        <tr>
+          <td class="num">17</td>
+          <td class="player-name">Luke Kennard</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">36</td>
+          <td class="num">-0.63</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+26.54</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.84</span></td>
+          <td class="num"><span style="color:#ef4444">11%</span></td>
+        </tr>
+        <tr>
+          <td class="num">18</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="player-name">Rui Hachimura</td>
+          <td class="num">1498</td>
+          <td class="num">+1.06</td>
+          <td class="num">+0.35</td>
+          <td class="num" style="color:#666">+3.33</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.77</span></td>
+          <td class="num"><span style="color:#22c55e">83%</span></td>
+        </tr>
+        <tr>
+          <td class="num">19</td>
+          <td class="player-name">Luka Dončić</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="num">1694</td>
+          <td class="num">+1.06</td>
+          <td class="num">+1.87</td>
+          <td class="num" style="color:#666">+3.09</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.62</span></td>
+          <td class="num"><span style="color:#22c55e">85%</span></td>
+        </tr>
+        <tr>
+          <td class="num">20</td>
+          <td class="player-name">Marcus Smart</td>
+          <td class="player-name">LeBron James</td>
+          <td class="num">1293</td>
+          <td class="num">+1.87</td>
+          <td class="num">+0.12</td>
+          <td class="num" style="color:#666">+3.04</td>
+          <td class="num"><span style="color:#86efac;font-weight:600">+2.46</span></td>
+          <td class="num"><span style="color:#22c55e">81%</span></td>
+        </tr></tbody>
+  </table>
+</div>
+
+
+        <div id="split" class="section">
+          <div class="section-title">Early vs recent comparison</div>
+          <div class="section-desc">Split at 2025-12-15. Delta = recent RAPM minus early RAPM — positive means player improved.</div>
+          <table class="data-table">
+            <thead><tr>
+              <th>#</th><th>Player</th>
+              <th style="text-align:right">Early RAPM</th>
+              <th style="text-align:right">Recent RAPM</th>
+              <th style="text-align:right">Delta</th>
+            </tr></thead>
+            <tbody>
+            <tr>
+              <td class="num">1</td>
+              <td class="player-name">Marcus Smart</td>
+              <td class="num">+0.77</td>
+              <td class="num">+2.30</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.53</span></td>
+            </tr>
+            <tr>
+              <td class="num">2</td>
+              <td class="player-name">Jaxson Hayes</td>
+              <td class="num">+0.04</td>
+              <td class="num">+1.45</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.40</span></td>
+            </tr>
+            <tr>
+              <td class="num">3</td>
+              <td class="player-name">Luke Kennard</td>
+              <td class="num">-0.43</td>
+              <td class="num">+0.92</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.35</span></td>
+            </tr>
+            <tr>
+              <td class="num">4</td>
+              <td class="player-name">LeBron James</td>
+              <td class="num">-0.26</td>
+              <td class="num">+0.78</td>
+              <td class="num"><span style="color:#86efac;font-weight:600">+1.03</span></td>
+            </tr>
+            <tr>
+              <td class="num">5</td>
+              <td class="player-name">Drew Timme</td>
+              <td class="num">-0.10</td>
+              <td class="num">+0.50</td>
+              <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.59</span></td>
+            </tr>
+            <tr>
+              <td class="num">6</td>
+              <td class="player-name">Rui Hachimura</td>
+              <td class="num">-0.06</td>
+              <td class="num">+0.45</td>
+              <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.52</span></td>
+            </tr>
+            <tr>
+              <td class="num">7</td>
+              <td class="player-name">Dalton Knecht</td>
+              <td class="num">-0.29</td>
+              <td class="num">+0.19</td>
+              <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.48</span></td>
+            </tr>
+            <tr>
+              <td class="num">8</td>
+              <td class="player-name">Jarred Vanderbilt</td>
+              <td class="num">-0.32</td>
+              <td class="num">+0.06</td>
+              <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.38</span></td>
+            </tr>
+            <tr>
+              <td class="num">9</td>
+              <td class="player-name">Austin Reaves</td>
+              <td class="num">+0.88</td>
+              <td class="num">+1.01</td>
+              <td class="num"><span style="color:#a7f3d0;font-weight:600">+0.13</span></td>
+            </tr>
+            <tr>
+              <td class="num">10</td>
+              <td class="player-name">Maxi Kleber</td>
+              <td class="num">+0.47</td>
+              <td class="num">+0.46</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.01</span></td>
+            </tr>
+            <tr>
+              <td class="num">11</td>
+              <td class="player-name">Adou Thiero</td>
+              <td class="num">-0.17</td>
+              <td class="num">-0.26</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.09</span></td>
+            </tr>
+            <tr>
+              <td class="num">12</td>
+              <td class="player-name">Bronny James</td>
+              <td class="num">+0.03</td>
+              <td class="num">-0.07</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.11</span></td>
+            </tr>
+            <tr>
+              <td class="num">13</td>
+              <td class="player-name">Jake LaRavia</td>
+              <td class="num">-0.29</td>
+              <td class="num">-0.51</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.22</span></td>
+            </tr>
+            <tr>
+              <td class="num">14</td>
+              <td class="player-name">Luka Dončić</td>
+              <td class="num">+1.08</td>
+              <td class="num">+0.80</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.29</span></td>
+            </tr>
+            <tr>
+              <td class="num">15</td>
+              <td class="player-name">Nick Smith Jr.</td>
+              <td class="num">+0.29</td>
+              <td class="num">-0.33</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.62</span></td>
+            </tr>
+            <tr>
+              <td class="num">16</td>
+              <td class="player-name">Deandre Ayton</td>
+              <td class="num">-0.21</td>
+              <td class="num">-0.86</td>
+              <td class="num"><span style="color:#fca5a5;font-weight:600">-0.65</span></td>
+            </tr></tbody>
+          </table>
+        </div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
