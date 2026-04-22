@@ -51,13 +51,3 @@ At the top of the script, the `CONFIG` block has two settings you might want to 
 
 ---
 
-## Automating It
-
-To get the digest every morning without running it manually, schedule it with Task Scheduler (Windows) or cron (Mac/Linux):
-
-**Windows Task Scheduler** — set trigger to daily at 8am, action: `python C:\path\to\nba_daily_digest.py`
-
-**cron (Mac/Linux)**:
-```
-0 8 * * * cd /path/to/nba_daily_digest && python nba_daily_digest.py
-```
