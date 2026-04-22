@@ -8,6 +8,6 @@ from output.html_report import generate_report
 season = "2025-26"
 out = run_full_pipeline(season=season, max_games=500)
 
-report_path = Path(__file__).parent / "output" / f"report_{season}.html"
+report_path = Path(__file__).parent / "reports" / f"report_{season}.html"
 generate_report(out, path=str(report_path), season=season)
 print(f"\nReport ready: {report_path}")

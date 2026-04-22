@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EONET Data Overview</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+           max-width: 860px; margin: 40px auto; padding: 0 24px;
+           color: #1e293b; background: #f8fafc; line-height: 1.7; }
+    h1   { font-size: 1.9rem; margin-bottom: 4px; color: #0f172a; }
+    h2   { font-size: 1.2rem; margin-top: 2.2rem; color: #0f172a;
+           border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+    h3   { font-size: 1rem; color: #334155; margin-bottom: 4px; }
+    .subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 2rem; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.88rem;
+            margin: 1rem 0 1.5rem; background: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); border-radius: 8px;
+            overflow: hidden; }
+    th    { background: #1e40af; color: #fff; padding: 9px 12px; text-align: left; }
+    td    { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #f1f5f9; }
+    .tag  { display: inline-block; padding: 2px 8px; border-radius: 99px;
+            font-size: 0.78rem; font-weight: 600; margin: 1px; }
+    .yes  { background: #dcfce7; color: #166534; }
+    .no   { background: #fee2e2; color: #991b1b; }
+    .note { background: #fffbeb; border-left: 4px solid #f59e0b;
+            padding: 10px 14px; border-radius: 4px; font-size: 0.9rem;
+            margin: 1rem 0; }
+    code  { background: #e2e8f0; padding: 2px 6px; border-radius: 4px;
+            font-size: 0.85rem; }
+    ul    { padding-left: 1.4rem; }
+    li    { margin-bottom: 4px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1rem 0; }
+    .card { background: #fff; border-radius: 8px; padding: 14px 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  </style>
+</head>
+<body>
+
+<h1>NASA EONET — Data Overview</h1>
+<p class="subtitle">
+  Earth Observatory Natural Event Tracker &nbsp;·&nbsp;
+  Free public API, no key required &nbsp;·&nbsp;
+  <a href="https://eonet.gsfc.nasa.gov/api/v3" target="_blank">eonet.gsfc.nasa.gov</a>
+</p>
+
+<h2>What Is EONET?</h2>
+<p>
+  EONET is NASA's catalog of natural events on Earth — wildfires, storms, earthquakes,
+  floods, and more. It doesn't collect data itself; instead it aggregates reports from
+  <strong>33 external sources</strong> (government agencies, research institutions, and
+  disaster-monitoring organizations) into a single searchable API.
+</p>
+<p>
+  Each <strong>event</strong> in EONET is one named occurrence: a specific wildfire, a specific
+  hurricane, a specific earthquake. As the event evolves, new location updates are added to it.
+  An event stays <em>open</em> while ongoing and becomes <em>closed</em> once it ends.
+</p>
+
+<h2>The 13 Event Categories</h2>
+<table>
+  <tr>
+    <th>Category</th><th>What It Is</th>
+    <th>Has Size/Intensity?</th><th>Notes</th>
+  </tr>
+  <tr>
+    <td><strong>Wildfires</strong></td>
+    <td>Active fires in wildland areas</td>
+    <td><span class="tag yes">Yes — acres / hectares</span></td>
+    <td>Highest-volume category. Updated frequently by IRWIN (US fire tracker).</td>
+  </tr>
+  <tr>
+    <td><strong>Severe Storms</strong></td>
+    <td>Hurricanes, cyclones, tornadoes</td>
+    <td><span class="tag yes">Yes — max wind knots</span></td>
+    <td>Full storm tracks recorded as sequences of positions over time.</td>
+  </tr>
+  <tr>
+    <td><strong>Earthquakes</strong></td>
+    <td>Tectonic shaking and displacement</td>
+    <td><span class="tag yes">Yes — Richter / Mw scale</span></td>
+    <td>Richest dataset. Thousands of events with precise coordinates and timestamps.</td>
+  </tr>
+  <tr>
+    <td><strong>Sea &amp; Lake Ice</strong></td>
+    <td>Icebergs and large ice formations</td>
+    <td><span class="tag yes">Yes — nautical miles²</span></td>
+    <td>Area polygons tracked over time by satellite.</td>
+  </tr>
+  <tr>
+    <td><strong>Floods</strong></td>
+    <td>Water covering land it normally doesn't</td>
+    <td><span class="tag no">No</span></td>
+    <td>Sourced mainly from news aggregators; city-level precision only.</td>
+  </tr>
+  <tr>
+    <td><strong>Volcanoes</strong></td>
+    <td>Active eruptions and ash plumes</td>
+    <td><span class="tag no">No</span></td>
+    <td>Updated as eruptions evolve; sourced from AVO and Smithsonian GVP.</td>
+  </tr>
+  <tr>
+    <td><strong>Landslides</strong></td>
+    <td>Mudslides, avalanches, debris flows</td>
+    <td><span class="tag no">No</span></td>
+    <td>Typically single-point, single-observation events.</td>
+  </tr>
+  <tr>
+    <td><strong>Drought</strong></td>
+    <td>Prolonged rainfall absence</td>
+    <td><span class="tag no">No</span></td>
+    <td>Low volume; reported at regional scale.</td>
+  </tr>
+  <tr>
+    <td><strong>Dust &amp; Haze</strong></td>
+    <td>Large dust storms and pollution plumes</td>
+    <td><span class="tag no">No</span></td>
+    <td>Satellite-visible aerosol events.</td>
+  </tr>
+  <tr>
+    <td><strong>Snow</strong></td>
+    <td>Anomalous snowfall events</td>
+    <td><span class="tag no">No</span></td>
+    <td>Low volume; unusually early, late, or heavy snowfall.</td>
+  </tr>
+  <tr>
+    <td><strong>Temperature Extremes</strong></td>
+    <td>Heatwaves and cold snaps</td>
+    <td><span class="tag no">No</span></td>
+    <td>Well outside normal range for that region and season.</td>
+  </tr>
+  <tr>
+    <td><strong>Water Color</strong></td>
+    <td>Algae blooms, red tide, sediment plumes</td>
+    <td><span class="tag no">No</span></td>
+    <td>Detected from satellite ocean color imagery.</td>
+  </tr>
+  <tr>
+    <td><strong>Manmade</strong></td>
+    <td>Large-scale human-caused events</td>
+    <td><span class="tag no">No</span></td>
+    <td>Industrial accidents, oil spills. Very sparse.</td>
+  </tr>
+</table>
+
+<h2>Data Granularity</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Location</h3>
+    <p>Every event has coordinates. Most are a <strong>single point</strong>
+    (longitude, latitude). Large area events — icebergs, algae blooms — use
+    <strong>polygons</strong> tracing the boundary.</p>
+  </div>
+  <div class="card">
+    <h3>Time</h3>
+    <p>Each location update carries a timestamp. Most are <strong>day-level</strong>
+    (midnight UTC as placeholder). Automated sources like IRWIN (wildfires) and
+    USGS (earthquakes) provide <strong>hour/minute precision</strong>.</p>
+  </div>
+  <div class="card">
+    <h3>Depth over time</h3>
+    <p>Records go back to roughly <strong>2000</strong> for some categories,
+    though coverage improves dramatically after 2016 as more sources were
+    integrated. Earlier years should be treated with caution.</p>
+  </div>
+  <div class="card">
+    <h3>Update frequency</h3>
+    <p>Wildfires and active storms can receive <strong>multiple updates per day</strong>.
+    Flood and drought events may be reported days or weeks after the fact,
+    from news sources rather than live monitoring.</p>
+  </div>
+</div>
+
+<h2>Reporting Artifacts — What to Watch For</h2>
+<p>
+  Because EONET aggregates from many sources that were integrated at different times,
+  apparent "trends" in event frequency can be caused by a new data source being added —
+  not by a real change in the world. Key examples found in this analysis:
+</p>
+<ul>
+  <li>
+    <strong>Wildfires (2024):</strong> Events jumped from ~97/year to ~5,600/year
+    — almost certainly a reporting expansion by IRWIN, not a real 57× increase in fires.
+    Analysis is capped at 2023.
+  </li>
+  <li>
+    <strong>Floods (pre-2025):</strong> A 6-year gap in reporting (2019–2024) followed
+    by a sudden surge when GDACS (an automated alert system) was integrated in May 2025.
+    The pre- and post-integration series are not comparable and cannot be joined.
+  </li>
+</ul>
+<div class="note">
+  <strong>Rule of thumb:</strong> before fitting any model, plot the raw monthly event
+  counts and look for sudden step changes — these almost always signal a source change,
+  not a climate signal.
+</div>
+
+<h2>The 33 Data Sources (Selected)</h2>
+<table>
+  <tr><th>Source ID</th><th>Organization</th><th>Best for</th></tr>
+  <tr><td><code>IRWIN</code></td><td>Integrated Reporting of Wildfire Information</td><td>US wildfires (frequent updates, precise acreage)</td></tr>
+  <tr><td><code>USGS_EHP</code></td><td>USGS Earthquake Hazards Program</td><td>Earthquakes (precise magnitude and timing)</td></tr>
+  <tr><td><code>NOAA_NHC</code></td><td>National Hurricane Center</td><td>Atlantic/Pacific storm tracks</td></tr>
+  <tr><td><code>JTWC</code></td><td>Joint Typhoon Warning Center</td><td>Western Pacific / Indian Ocean storms</td></tr>
+  <tr><td><code>GDACS</code></td><td>Global Disaster Alert and Coordination System</td><td>Floods (automated alerts, global, from May 2025)</td></tr>
+  <tr><td><code>FloodList</code></td><td>FloodList</td><td>Floods (curated news-based, global coverage)</td></tr>
+  <tr><td><code>AVO</code></td><td>Alaska Volcano Observatory</td><td>Alaskan eruptions</td></tr>
+  <tr><td><code>SIVolcano</code></td><td>Smithsonian Global Volcanism Program</td><td>Global eruptions</td></tr>
+  <tr><td><code>BYU_ICE</code></td><td>BYU Antarctic Iceberg Tracking</td><td>Southern Ocean icebergs</td></tr>
+  <tr><td><code>NATICE</code></td><td>US National Ice Center</td><td>Arctic/Antarctic sea ice</td></tr>
+  <tr><td><code>CALFIRE</code></td><td>California Dept. of Forestry</td><td>California wildfires</td></tr>
+  <tr><td><code>EO</code></td><td>NASA Earth Observatory</td><td>Satellite-confirmed events across all categories</td></tr>
+</table>
+
+<h2>What This Project Models</h2>
+<p>
+  The analysis fits an <strong>inhomogeneous Poisson process</strong> to monthly event
+  counts in each category. The model estimates:
+</p>
+<ul>
+  <li>A <strong>seasonal pattern</strong> — which months are systematically busier</li>
+  <li>A <strong>long-run trend</strong> — whether event frequency is increasing or decreasing over time</li>
+</ul>
+<p>
+  Two statistical tests check whether any apparent trend is real:
+  the <strong>Mann-Kendall test</strong> (non-parametric, rank-based) and the
+  <strong>GLM trend coefficient</strong> (parametric). Model performance is evaluated
+  using <strong>expanding-window time series cross-validation</strong> — always training
+  on the past and testing on the future.
+</p>
+<p>
+  Key finding: <strong>Severe Storms is the only category that is genuinely stationary</strong>
+  — both tests agree there is no trend (p = 0.57 / 0.30). Wildfires and Volcanoes show
+  a GLM-detected trend, but the non-parametric test disagrees, and the CV shows the trend
+  hurts out-of-sample predictions — consistent with reporting artifacts rather than real signals.
+</p>
+
+</body>
+</html>

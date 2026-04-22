@@ -15,10 +15,12 @@ eonet_explorer/cache/
 
 # ── fairness_credit ─────────────────────────────────────────────────────────
 # ACS PUMS raw microdata (~270 MB each — over GitHub's 100 MB hard limit)
-fairness_credit/data/
+fairness_credit/data/2018/
+fairness_credit/data/2022/
 
 # Large intermediate parquet files (HMDA data, ~45 MB each)
 fairness_credit/hmda_*.parquet
+fairness_credit/data/hmda_*.parquet
 
 # TIGER/Line shapefiles (~22 MB)
 fairness_credit/tiger_fl/
