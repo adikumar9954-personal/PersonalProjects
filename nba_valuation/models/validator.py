@@ -1,5 +1,5 @@
-"""
-models/validator.py  (v2 — unchanged logic, cleaner interface)
+﻿"""
+models/validator.py  (v2 - unchanged logic, cleaner interface)
 """
 
 import numpy as np
@@ -7,7 +7,7 @@ import pandas as pd
 from scipy.stats import percentileofscore
 from sklearn.linear_model import LassoCV
 
-# Offensive — leaguehustlestatsplayer + leaguedashplayerptshot
+# Offensive - leaguehustlestatsplayer + leaguedashplayerptshot
 OFFENSIVE_FEATURES = [
     ("SCREEN_ASSISTS",  +1, 2.0, "Screen assists per game"),
     ("DEFLECTIONS",     +1, 1.5, "Deflections per game"),
@@ -15,7 +15,7 @@ OFFENSIVE_FEATURES = [
     ("FG3_PCT",         +1, 1.0, "3pt FG%"),
     ("CHARGES_DRAWN",   +1, 1.0, "Charges drawn per game"),
 ]
-# Defensive — lineup-level team on/off (true on vs same-team off)
+# Defensive - lineup-level team on/off (true on vs same-team off)
 DEFENSIVE_FEATURES = [
     ("opp_fg_pct_delta",     -1, 3.0, "Team opp FG% on vs off court"),
     ("opp_fg3a_rate_delta",  -1, 2.0, "Team opp 3PA rate on vs off court"),
@@ -23,7 +23,7 @@ DEFENSIVE_FEATURES = [
     ("D_FGA",                +1, 1.0, "Defended shot attempts per game"),
     ("CONTESTED_SHOTS",      +1, 1.5, "Contested shots per game"),
 ]
-# Playmaking — passing tracking + lineup on/off (team-wide effects)
+# Playmaking - passing tracking + lineup on/off (team-wide effects)
 # Columns sourced from: LeagueDashPtStats (Passing/Drives) + data/playmaking.py
 PLAYMAKING_FEATURES = [
     ("POTENTIAL_AST",   +1, 2.5, "Potential assists per game"),
@@ -72,9 +72,9 @@ def score_player(player_id: str, rapm: float, tracking_pct: pd.DataFrame) -> dic
     pm_support  = weighted_avg(PLAYMAKING_FEATURES)
     support     = 0.40 * o_support + 0.35 * d_support + 0.25 * pm_support
 
-    # Columns that are 0-1 proportions — display as "45.1%"
+    # Columns that are 0-1 proportions - display as "45.1%"
     _PCT_COLS   = {"EFG_PCT", "FG3_PCT"}
-    # Columns that are small decimal deltas — display as "+2.3%"
+    # Columns that are small decimal deltas - display as "+2.3%"
     _DELTA_COLS = {
         "fg3a_rate_delta", "tov_rate_delta", "rim_rate_delta",
         "opp_fg_pct_delta", "opp_fg3a_rate_delta", "opp_tov_rate_delta",
@@ -82,7 +82,7 @@ def score_player(player_id: str, rapm: float, tracking_pct: pd.DataFrame) -> dic
 
     def _fmt_raw(col, val):
         if val is None or pd.isna(val):
-            return "—"
+            return "-"
         if col in _PCT_COLS:
             return f"{val * 100:.1f}%"
         if col in _DELTA_COLS:
@@ -113,7 +113,7 @@ def fit_support_model(tracking_pct: pd.DataFrame, rapm_qualified: pd.DataFrame):
     Fit a LassoCV to predict RAPM from tracking percentile features.
     Automatically zeros out uninformative features.
 
-    Returns (model, feature_cols) — model is None if insufficient data.
+    Returns (model, feature_cols) - model is None if insufficient data.
     """
     all_features = OFFENSIVE_FEATURES + DEFENSIVE_FEATURES + PLAYMAKING_FEATURES
     pct_cols = [f"{col}_pct" for col, _, _, _ in all_features]
@@ -126,7 +126,7 @@ def fit_support_model(tracking_pct: pd.DataFrame, rapm_qualified: pd.DataFrame):
 
     merged = tp.merge(rq[["_pid", "rapm"]], on="_pid", how="inner")
     # Fill missing percentile features with 50 (league-average proxy) rather than
-    # dropping the whole row — only require the target to be present.
+    # dropping the whole row - only require the target to be present.
     for c in avail:
         if c in merged.columns:
             merged[c] = merged[c].fillna(50.0)
@@ -135,7 +135,7 @@ def fit_support_model(tracking_pct: pd.DataFrame, rapm_qualified: pd.DataFrame):
     merged = merged.dropna(subset=["rapm"])
 
     if len(merged) < 20:
-        print(f"[lasso] only {len(merged)} complete rows — falling back to manual weights")
+        print(f"[lasso] only {len(merged)} complete rows - falling back to manual weights")
         return None, avail
 
     X = merged[avail].values

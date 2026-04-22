@@ -1,4 +1,4 @@
-
+﻿
 
 from pathlib import Path
 import html as html_lib
@@ -72,12 +72,12 @@ def generate_report(
                 if fmt:
                     cells.append(f'<td>{fmt(v, row)}</td>')
                 else:
-                    cells.append(f'<td>{v if v is not None else "—"}</td>')
+                    cells.append(f'<td>{v if v is not None else "-"}</td>')
             rows.append(f'<tr>{"".join(cells)}</tr>')
         return "\n".join(rows)
 
     # ── Players table ─────────────────────────────────────────────────────
-    def rapm_cell(v, row): return f'<span style="color:{_rapm_color(v)};font-weight:600">{v:+.2f}</span>' if v is not None else "—"
+    def rapm_cell(v, row): return f'<span style="color:{_rapm_color(v)};font-weight:600">{v:+.2f}</span>' if v is not None else "-"
     def support_cell(v, row):
         if v is None: return '<span style="color:#888">N/A</span>'
         return f'<span style="color:{_support_color(v)}">{v:.0f}</span>'
@@ -102,14 +102,14 @@ def generate_report(
         player_table_rows.append(f"""
         <tr{hidden_cls} data-name="{name_lower}">
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_name","—")))}</td>
-          <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "—"}</span></td>
-          <td class="num">{f"{row.get('prior',0):+.2f}" if row.get('prior') is not None else "—"}</td>
-          <td class="num">{f"{row.get('rapm_adjustment',0):+.2f}" if row.get('rapm_adjustment') is not None else "—"}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_name","-")))}</td>
+          <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "-"}</span></td>
+          <td class="num">{f"{row.get('prior',0):+.2f}" if row.get('prior') is not None else "-"}</td>
+          <td class="num">{f"{row.get('rapm_adjustment',0):+.2f}" if row.get('rapm_adjustment') is not None else "-"}</td>
           <td class="num"><span style="color:{_support_color(supp_v)}">{f"{supp_v:.0f}" if supp_v is not None else "N/A"}</span></td>
-          <td class="num">{f"{row.get('o_support',0):.0f}" if row.get('o_support') is not None else "—"}</td>
-          <td class="num">{f"{row.get('d_support',0):.0f}" if row.get('d_support') is not None else "—"}</td>
-          <td class="num">{f"{row.get('playmaking_support',0):.0f}" if row.get('playmaking_support') is not None else "—"}</td>
+          <td class="num">{f"{row.get('o_support',0):.0f}" if row.get('o_support') is not None else "-"}</td>
+          <td class="num">{f"{row.get('d_support',0):.0f}" if row.get('d_support') is not None else "-"}</td>
+          <td class="num">{f"{row.get('playmaking_support',0):.0f}" if row.get('playmaking_support') is not None else "-"}</td>
           <td class="flags">{flags_html}</td>
         </tr>""")
 
@@ -123,7 +123,7 @@ def generate_report(
         lineup_rows.append(f"""
         <tr>
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("players","—")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("players","-")))}</td>
           <td class="num">{row.get("possessions",0):.0f}</td>
           <td class="num">{row.get("actual_rapm",0):+.1f}</td>
           <td class="num">{row.get("expected_rapm",0):+.1f}</td>
@@ -142,8 +142,8 @@ def generate_report(
         pair_rows.append(f"""
         <tr>
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_a","—")))}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_b","—")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_a","-")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_b","-")))}</td>
           <td class="num">{row.get("shared_poss",0):.0f}</td>
           <td class="num">{row.get("rapm_a",0):+.2f}</td>
           <td class="num">{row.get("rapm_b",0):+.2f}</td>
@@ -163,9 +163,9 @@ def generate_report(
             rows_html.append(f"""
             <tr>
               <td class="num">{i}</td>
-              <td class="player-name">{html_lib.escape(str(row.get("player_name","—")))}</td>
-              <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "—"}</span></td>
-              <td class="num">{f"{row.get('rapm_pct',0):.0f}" if row.get('rapm_pct') is not None else "—"}</td>
+              <td class="player-name">{html_lib.escape(str(row.get("player_name","-")))}</td>
+              <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "-"}</span></td>
+              <td class="num">{f"{row.get('rapm_pct',0):.0f}" if row.get('rapm_pct') is not None else "-"}</td>
               <td class="num"><span style="color:{_support_color(supp_v)}">{f"{supp_v:.0f}" if supp_v is not None else "N/A"}</span></td>
             </tr>""")
         return f"""
@@ -183,7 +183,7 @@ def generate_report(
     hidden_html = screener_table(screens.get("hidden_gems",  pd.DataFrame()), "Hidden Gems",     "#f59e0b")
 
     # ── Stats summary cards ───────────────────────────────────────────────
-    top_player  = rapm.iloc[0]["player_name"] if len(rapm) else "—"
+    top_player  = rapm.iloc[0]["player_name"] if len(rapm) else "-"
     top_rapm    = rapm.iloc[0]["rapm"] if len(rapm) else 0
     n_players   = len(validated)
     n_lineups   = len(synergy)
@@ -195,7 +195,7 @@ def generate_report(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NBA Valuation Report — {season}</title>
+<title>NBA Valuation Report - {season}</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {{
@@ -440,22 +440,22 @@ def generate_report(
 <!-- SCREENER -->
 <div id="screener" class="section">
   <div class="section-title">Mispricing screener</div>
-  <div class="section-desc">Players where RAPM and tracking support diverge — potential over or undervaluation signals.</div>
+  <div class="section-desc">Players where RAPM and tracking support diverge - potential over or undervaluation signals.</div>
   <div class="screener-grid">
     <div class="screener-block">
-      <h3 class="overvalued-title">Overvalued — high RAPM, low tracking support</h3>
+      <h3 class="overvalued-title">Overvalued - high RAPM, low tracking support</h3>
       {over_html}
     </div>
     <div class="screener-block">
-      <h3 class="undervalued-title">Undervalued — low RAPM, high tracking support</h3>
+      <h3 class="undervalued-title">Undervalued - low RAPM, high tracking support</h3>
       {under_html}
     </div>
     <div class="screener-block">
-      <h3 class="elite-title">Confirmed elite — high RAPM + high support</h3>
+      <h3 class="elite-title">Confirmed elite - high RAPM + high support</h3>
       {elite_html}
     </div>
     <div class="screener-block">
-      <h3 class="hidden-title">Hidden gems — modest RAPM, tracking says more</h3>
+      <h3 class="hidden-title">Hidden gems - modest RAPM, tracking says more</h3>
       {hidden_html}
     </div>
   </div>
@@ -542,6 +542,6 @@ function showAllPlayers() {{
 
     if path:
         Path(path).write_text(html, encoding="utf-8")
-        print(f"[report] saved → {path}")
+        print(f"[report] saved -> {path}")
 
     return html

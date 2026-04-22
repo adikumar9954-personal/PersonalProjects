@@ -1,4 +1,4 @@
-"""
+﻿"""
 data/playmaking.py
 ==================
 Compute per-player team on/off effects on six lineup-level metrics, all using
@@ -7,15 +7,15 @@ baseline, not league average):
 
   Offensive
   ---------
-  fg3a_rate_delta   — team 3PA rate on vs off court
-  tov_rate_delta    — team TOV rate on vs off court  (negative = fewer TOs)
-  rim_rate_delta    — team PTS_PAINT/FGA on vs off court
+  fg3a_rate_delta   - team 3PA rate on vs off court
+  tov_rate_delta    - team TOV rate on vs off court  (negative = fewer TOs)
+  rim_rate_delta    - team PTS_PAINT/FGA on vs off court
 
   Defensive
   ---------
-  opp_fg_pct_delta     — team opponent FG% on vs off court  (negative = better)
-  opp_fg3a_rate_delta  — team opponent 3PA rate on vs off  (negative = better)
-  opp_tov_rate_delta   — team forced TOV rate on vs off     (positive = better)
+  opp_fg_pct_delta     - team opponent FG% on vs off court  (negative = better)
+  opp_fg3a_rate_delta  - team opponent 3PA rate on vs off  (negative = better)
+  opp_tov_rate_delta   - team forced TOV rate on vs off     (positive = better)
 
 League-average baselines are computed but only used as a fallback when a
 team has no off-court sample for a given player.
@@ -44,7 +44,7 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
         opp_fg_pct_delta, opp_fg3a_rate_delta, opp_tov_rate_delta
     """
     if lineup_shot_profile.empty:
-        print("[playmaking] no lineup shot profile data — skipping")
+        print("[playmaking] no lineup shot profile data - skipping")
         return pd.DataFrame()
 
     df = lineup_shot_profile.copy()
@@ -63,7 +63,7 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
         if has_rim else np.nan
     )
     if not has_rim:
-        print("[playmaking] PTS_PAINT not available — rim_rate_delta will be NaN")
+        print("[playmaking] PTS_PAINT not available - rim_rate_delta will be NaN")
 
     # ── Lineup-level defensive rates ─────────────────────────────────────────
     has_def = all(c in df.columns for c in ["OPP_FGM", "OPP_FGA"])
@@ -81,7 +81,7 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
         )
     else:
         df["opp_fg_pct"] = df["opp_fg3a_rate"] = df["opp_tov_rate"] = np.nan
-        print("[playmaking] OPP_FGM/FGA not available — defensive on/off will be NaN")
+        print("[playmaking] OPP_FGM/FGA not available - defensive on/off will be NaN")
 
     # ── League-average baselines (fallback only) ─────────────────────────────
     total_fga  = df["FGA"].sum()
@@ -106,7 +106,7 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
         lg_opp_fg_pct = lg_opp_fg3a_rate = lg_opp_tov_rate = np.nan
 
     print(
-        f"[playmaking] league avg — 3PA rate: {lg_fg3a_rate:.3f}  "
+        f"[playmaking] league avg - 3PA rate: {lg_fg3a_rate:.3f}  "
         f"TOV rate: {lg_tov_rate:.3f}"
         + (f"  rim rate: {lg_rim_rate:.3f}" if has_rim else "")
         + (f"  opp FG%: {lg_opp_fg_pct:.3f}" if has_def else "")
@@ -117,10 +117,10 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
 
     # ── Single pass: build per-player accumulators and team-lineup index ─────
     #
-    # player_data[pid]  — on-court weighted sums for display values + fallback
-    # team_lineups[tid] — list of tuples:
+    # player_data[pid]  - on-court weighted sums for display values + fallback
+    # team_lineups[tid] - list of tuples:
     #   (set(pids), fg3a_r, tov_r, rim_r, opp_fg_r, opp_f3r, opp_tvr, w)
-    # player_team_w[pid]— {team_id: total on-court minutes} → primary team
+    # player_team_w[pid]- {team_id: total on-court minutes} -> primary team
 
     player_data:   dict = {}
     team_lineups:  dict = {}
@@ -234,7 +234,7 @@ def compute_playmaking_onoff(lineup_shot_profile: pd.DataFrame) -> pd.DataFrame:
             opp_f3_delta = _delta(on_o3_w, on_o3_v, off_o3_w, off_o3_v)
             opp_tv_delta = _delta(on_ot_w, on_ot_v, off_ot_w, off_ot_v)
 
-        # Fallbacks — league-average baseline when team on/off is unavailable
+        # Fallbacks - league-average baseline when team on/off is unavailable
         if _isnan(fg3a_delta) and not _isnan(fg3a_rate):
             fg3a_delta = round(fg3a_rate - lg_fg3a_rate, 4)
         if _isnan(tov_delta) and not _isnan(tov_rate):

@@ -1,10 +1,10 @@
-"""
+﻿"""
 data/ingest.py  (v2)
 ====================
 Fixes from v1:
-  1. Stints via pbpstats.com API — no fragile PBP parser
+  1. Stints via pbpstats.com API - no fragile PBP parser
   2. Prior target: RAPTOR > LEBRON > raw +/- (in priority order)
-  3. Full caching — every endpoint hits the network once per season
+  3. Full caching - every endpoint hits the network once per season
 
 Install: pip install nba_api pandas pyarrow requests
 """
@@ -42,7 +42,7 @@ def _load_or_fetch(name: str, season: str, fetch_fn) -> pd.DataFrame:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# FIX 1 — Stints via pbpstats.com
+# FIX 1 - Stints via pbpstats.com
 # ═══════════════════════════════════════════════════════════════════════════
 
 def get_game_ids(season: str = "2023-24") -> list[str]:
@@ -62,7 +62,7 @@ def get_game_ids(season: str = "2023-24") -> list[str]:
 def _fetch_pbpstats_game(game_id: str) -> list[dict]:
     """
     Pull lineup stints for one game from pbpstats.com.
-    Handles double-subs, ejections, OT, technicals — all the edge cases
+    Handles double-subs, ejections, OT, technicals - all the edge cases
     the hand-rolled PBP parser missed.
     """
     url = "https://api.pbpstats.com/get-game-stats/nba"
@@ -131,11 +131,11 @@ def get_stints(season: str = "2023-24", max_games: int = None) -> pd.DataFrame:
             break
         except Exception as e:
             wait = (attempt + 1) * 20
-            print(f"  [retry {attempt+1}/3] failed: {e.__class__.__name__}: {e} — waiting {wait}s")
+            print(f"  [retry {attempt+1}/3] failed: {e.__class__.__name__}: {e} - waiting {wait}s")
             time.sleep(wait)
 
     if df is None or df.empty:
-        print("  [warning] LeagueDashLineups failed — returning empty")
+        print("  [warning] LeagueDashLineups failed - returning empty")
         return pd.DataFrame()
 
     time.sleep(NBA_API_DELAY)
@@ -206,7 +206,7 @@ def get_lebron(season: str = "2023-24") -> pd.DataFrame | None:
     year = int(season.split("-")[0]) + 1
     path = CACHE_DIR / f"lebron_{year}.csv"
     if not path.exists():
-        print(f"  [lebron] Not at {path} — skipping. "
+        print(f"  [lebron] Not at {path} - skipping. "
               f"Download from BBRef and save there to use LEBRON as prior.")
         return None
     df = pd.read_csv(path)
@@ -255,7 +255,7 @@ def get_best_prior_target(season: str, box_per100: pd.DataFrame) -> pd.DataFrame
             base.loc[mask, "prior_source"] = "raptor"
             print(f"  [prior] RAPTOR matched {mask.sum()}/{len(base)} players")
 
-    # Try LEBRON (id-matched — more precise, overwrites RAPTOR)
+    # Try LEBRON (id-matched - more precise, overwrites RAPTOR)
     lebron = get_lebron(season)
     if lebron is not None and "lebron" in lebron.columns and "player_id" in lebron.columns:
         lmap = dict(zip(lebron["player_id"].astype(str), lebron["lebron"]))
@@ -266,7 +266,7 @@ def get_best_prior_target(season: str, box_per100: pd.DataFrame) -> pd.DataFrame
         base.loc[mask, "prior_source"] = "lebron"
         print(f"  [prior] LEBRON matched {mask.sum()}/{len(base)} players")
 
-    # DARKO (id-matched, overwrites all — most current and accurate)
+    # DARKO (id-matched, overwrites all - most current and accurate)
     darko = get_darko(season)
     if darko is not None and "darko" in darko.columns:
         dmap = dict(zip(darko["player_id"].astype(str), darko["darko"]))
@@ -344,7 +344,7 @@ def _get_player_defense(season: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 def _get_hustle_stats(season: str) -> pd.DataFrame:
-    """Player hustle stats — contested shots, screen assists, deflections."""
+    """Player hustle stats - contested shots, screen assists, deflections."""
     from nba_api.stats.endpoints import leaguehustlestatsplayer
     def fetch():
         ep = leaguehustlestatsplayer.LeagueHustleStatsPlayer(
@@ -363,7 +363,7 @@ def _get_hustle_stats(season: str) -> pd.DataFrame:
 
 
 def _get_ptshot_stats(season: str) -> pd.DataFrame:
-    """Player shot quality — FG%, EFG%, 2pt/3pt splits."""
+    """Player shot quality - FG%, EFG%, 2pt/3pt splits."""
     from nba_api.stats.endpoints import leaguedashplayerptshot
     def fetch():
         ep = leaguedashplayerptshot.LeagueDashPlayerPtShot(
@@ -392,9 +392,9 @@ def get_lineup_shot_profile(season: str = "2023-24") -> pd.DataFrame:
 
     Makes three calls:
       - Base:     FGA, FG3A, FTA, TOV, MIN (team offensive counting stats)
-      - Misc:     PTS_PAINT (paint points — lineup-level rim proxy)
+      - Misc:     PTS_PAINT (paint points - lineup-level rim proxy)
       - Opponent: OPP_FGA, OPP_FGM, OPP_FG3A, OPP_FTA, OPP_TOV
-                  (what the opponent did against each lineup — used for
+                  (what the opponent did against each lineup - used for
                    defensive on/off: opp FG%, opp 3PA rate, forced TOV rate)
 
     All three are merged on GROUP_ID and cached as a single parquet.
@@ -422,13 +422,13 @@ def get_lineup_shot_profile(season: str = "2023-24") -> pd.DataFrame:
                 except Exception as e:
                     wait = (attempt + 1) * 20
                     print(f"  [retry {attempt+1}/{retries}] lineup {measure_type} failed: "
-                          f"{e.__class__.__name__} — waiting {wait}s")
+                          f"{e.__class__.__name__} - waiting {wait}s")
                     time.sleep(wait)
             return None
 
         df_base = _call("Base")
         if df_base is None:
-            print("  [warning] lineup Base fetch failed — returning empty")
+            print("  [warning] lineup Base fetch failed - returning empty")
             return pd.DataFrame()
 
         time.sleep(2)
@@ -454,7 +454,7 @@ def get_lineup_shot_profile(season: str = "2023-24") -> pd.DataFrame:
             if col in df_base.columns:
                 result[col] = df_base[col].fillna(0).astype(float)
 
-        # Misc → PTS_PAINT
+        # Misc -> PTS_PAINT
         if df_misc is not None and not df_misc.empty:
             misc_id   = "GROUP_ID" if "GROUP_ID" in df_misc.columns else df_misc.columns[1]
             misc_keep = [misc_id] + [c for c in ["PTS_PAINT"] if c in df_misc.columns]
@@ -464,9 +464,9 @@ def get_lineup_shot_profile(season: str = "2023-24") -> pd.DataFrame:
                     on="group_id", how="left",
                 )
         else:
-            print("  [warning] lineup Misc fetch failed — rim_rate_delta will be unavailable")
+            print("  [warning] lineup Misc fetch failed - rim_rate_delta will be unavailable")
 
-        # Opponent → defensive counting stats
+        # Opponent -> defensive counting stats
         opp_want = ["OPP_FGA", "OPP_FGM", "OPP_FG3A", "OPP_FG3M", "OPP_FTA", "OPP_TOV"]
         if df_opp is not None and not df_opp.empty:
             opp_id    = "GROUP_ID" if "GROUP_ID" in df_opp.columns else df_opp.columns[1]
@@ -479,7 +479,7 @@ def get_lineup_shot_profile(season: str = "2023-24") -> pd.DataFrame:
             else:
                 print(f"  [warning] Opponent cols not found; got: {df_opp.columns.tolist()[:12]}")
         else:
-            print("  [warning] lineup Opponent fetch failed — defensive on/off unavailable")
+            print("  [warning] lineup Opponent fetch failed - defensive on/off unavailable")
 
         if "MIN" in result.columns:
             result = result[result["MIN"] >= 2].reset_index(drop=True)
@@ -507,7 +507,7 @@ def get_all_tracking(season: str = "2023-24") -> pd.DataFrame:
     tables = [t for t in [defense, hustle, ptshot, passing]
               if not t.empty and "PLAYER_ID" in t.columns]
     if not tables:
-        print("  [warning] all tracking failed — returning empty")
+        print("  [warning] all tracking failed - returning empty")
         return pd.DataFrame()
 
     merged = tables[0].copy()

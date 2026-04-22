@@ -154,7 +154,7 @@ def compute_synergy(
         })
 
     df = pd.DataFrame(rows).sort_values("synergy_shrunk", ascending=False)
-    print(f"[synergy] {len(df)} lineups with ≥{min_poss} poss")
+    print(f"[synergy] {len(df)} lineups with >={min_poss} poss")
     print(f"  Best delta:  {df['synergy_delta'].max():.2f}")
     print(f"  Worst delta: {df['synergy_delta'].min():.2f}")
     return df.reset_index(drop=True)
@@ -239,7 +239,7 @@ def compute_pairwise_compatibility(
         })
 
     df = pd.DataFrame(rows).sort_values("compat_shrunk", ascending=False)
-    print(f"[pairwise] {len(df)} pairs with ≥{min_shared_poss} shared poss")
+    print(f"[pairwise] {len(df)} pairs with >={min_shared_poss} shared poss")
     return df.reset_index(drop=True)
 
 

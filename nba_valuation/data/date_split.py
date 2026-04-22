@@ -1,8 +1,8 @@
-"""
+﻿"""
 data/date_split.py
 ==================
 Runs the pipeline over two date windows and compares results.
-Useful for before/after analysis — e.g. pre vs post injury return.
+Useful for before/after analysis - e.g. pre vs post injury return.
 
 Usage in your test file:
     from data.date_split import compare_windows
@@ -12,9 +12,9 @@ Usage in your test file:
         split_date="2025-12-01",   # date dividing early vs recent
         max_games=100,
     )
-    # results["early"]  — pipeline output for games before split_date
-    # results["recent"] — pipeline output for games after split_date
-    # results["comparison"] — side-by-side player DataFrame
+    # results["early"]  - pipeline output for games before split_date
+    # results["recent"] - pipeline output for games after split_date
+    # results["comparison"] - side-by-side player DataFrame
 """
 
 import time
@@ -51,7 +51,7 @@ def get_stints_daterange(
         print(f"  [cache] stints ({label})")
         return pd.read_parquet(path)
 
-    print(f"  [fetch] stints for window: {date_from or 'season start'} → {date_to or 'today'}")
+    print(f"  [fetch] stints for window: {date_from or 'season start'} -> {date_to or 'today'}")
 
     df = None
     for attempt in range(3):
@@ -69,7 +69,7 @@ def get_stints_daterange(
             break
         except Exception as e:
             wait = (attempt + 1) * 20
-            print(f"  [retry {attempt+1}/3] {e.__class__.__name__} — waiting {wait}s")
+            print(f"  [retry {attempt+1}/3] {e.__class__.__name__} - waiting {wait}s")
             time.sleep(wait)
 
     if df is None or df.empty:
@@ -115,7 +115,7 @@ def run_window(
     prior_targets: pd.DataFrame,
 ) -> dict:
     """Run the full RAPM + validation pipeline for one date window."""
-    print(f"\n── Window: {label} ({date_from or 'start'} → {date_to or 'now'}) ──")
+    print(f"\n--Window: {label} ({date_from or 'start'} -> {date_to or 'now'}) --")
 
     stints = get_stints_daterange(season, date_from, date_to, label)
     if stints.empty:
@@ -150,7 +150,7 @@ def compare_windows(
     """
     Run pipeline on two windows split at split_date and compare.
 
-    split_date: "YYYY-MM-DD" — divides early vs recent
+    split_date: "YYYY-MM-DD" - divides early vs recent
     Returns dict with "early", "recent", "comparison" keys.
     """
     from datetime import datetime
@@ -165,8 +165,8 @@ def compare_windows(
     date_from_recent = to_nba_fmt(split_date)
     date_to_recent   = to_nba_fmt(recent_end)
 
-    # Shared data — fetch once
-    print("\n── Shared data ──")
+    # Shared data - fetch once
+    print("\n--Shared data --")
     box100        = get_box_scores(season)
     box_adv       = get_advanced_box(season)
     tracking      = get_all_tracking(season)
@@ -189,7 +189,7 @@ def compare_windows(
         comparison = e.merge(r[["player_id","rapm_recent"]], on="player_id", how="inner")
         comparison["rapm_delta"] = comparison["rapm_recent"] - comparison["rapm_early"]
         comparison = comparison.sort_values("rapm_delta", ascending=False)
-        print(f"\n── Comparison: {len(comparison)} players in both windows ──")
+        print(f"\n--Comparison: {len(comparison)} players in both windows --")
 
     return {
         "early":      early,
@@ -210,7 +210,7 @@ def print_player_comparison(
     recent = results["recent"]
 
     print(f"\n{'='*68}")
-    print(f"  {name.upper()} — WINDOW COMPARISON")
+    print(f"  {name.upper()} - WINDOW COMPARISON")
     print(f"{'='*68}")
 
     # RAPM comparison
@@ -244,7 +244,7 @@ def print_player_comparison(
             pairs["player_b"].str.contains(first, case=False)
         ].sort_values("compat_shrunk", ascending=False).head(top_n_pairs)
 
-        print(f"\n  Best pairings — {label}:")
+        print(f"\n  Best pairings - {label}:")
         print(f"  {'Partner':<26} {'Poss':>5}  {'Shrunk':>7}  {'Conf':>5}")
         print(f"  {'-'*26} {'-'*5}  {'-'*7}  {'-'*5}")
         for _, pr in p.iterrows():
@@ -273,7 +273,7 @@ def print_player_comparison(
         merged["improvement"] = merged["recent_syn"] - merged["early_syn"]
         merged = merged.sort_values("recent_syn", ascending=False).head(5)
 
-        print(f"\n  Best lineups — Recent window:")
+        print(f"\n  Best lineups - Recent window:")
         print(f"  {'Players':<55} {'Poss':>5}  {'Shrunk':>7}")
         print(f"  {'-'*55} {'-'*5}  {'-'*7}")
         for _, lr in merged.iterrows():

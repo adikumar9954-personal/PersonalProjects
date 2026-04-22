@@ -14,7 +14,7 @@ OUTPUT_DIR = Path(__file__).parent.parent / "reports"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 
-# ── Player report ──────────────────────────────────────────────────────────
+# --Player report --────────────────────────────────────────────────────────
 
 def player_report(
     name_or_id: str,
@@ -73,7 +73,7 @@ def player_report(
     return "\n".join(str(l) for l in lines)
 
 
-# ── League screener ────────────────────────────────────────────────────────
+# --League screener --──────────────────────────────────────────────────────
 
 def league_screener(
     validated: pd.DataFrame,
@@ -95,10 +95,10 @@ def league_screener(
 
 def print_screener(screens: dict) -> None:
     labels = {
-        "overvalued":      "OVERVALUED — high RAPM, low tracking support",
-        "undervalued":     "UNDERVALUED — low RAPM, high tracking support",
-        "confirmed_elite": "CONFIRMED ELITE — high RAPM + high support",
-        "hidden_gems":     "HIDDEN GEMS — modest RAPM, tracking says more",
+        "overvalued":      "OVERVALUED -high RAPM, low tracking support",
+        "undervalued":     "UNDERVALUED -low RAPM, high tracking support",
+        "confirmed_elite": "CONFIRMED ELITE -high RAPM + high support",
+        "hidden_gems":     "HIDDEN GEMS -modest RAPM, tracking says more",
     }
     for key, df in screens.items():
         print(f"\n{'='*62}\n  {labels[key]}\n{'='*62}")
@@ -154,12 +154,12 @@ def run_full_pipeline(
     """
     End-to-end pipeline. Returns dict with all output DataFrames.
 
-    n_seasons:       how many seasons of stints to stack for RAPM (default 3 — the
+    n_seasons:       how many seasons of stints to stack for RAPM (default 3 -the
                      accepted stabilisation window). Box scores / tracking / priors
                      always use the current season only.
     season_weights:  possession multipliers per season, newest-first.
                      Defaults to [1.00, 0.75, 0.50] for 3 seasons.
-    roster_for_lineup: list of player_ids — if provided, prints optimal lineup.
+    roster_for_lineup: list of player_ids -if provided, prints optimal lineup.
     """
     from data.ingest import (get_stints, get_box_scores, get_advanced_box,
                               get_all_tracking, get_best_prior_target,
@@ -178,13 +178,13 @@ def run_full_pipeline(
     season_weights = list(season_weights)[:len(seasons_list)]
 
     print(f"\n{'='*62}")
-    print(f"  NBA Valuation Pipeline v2 — {season}")
-    wstr = "  +  ".join(f"{s} (×{w:.2f})" for s, w in zip(seasons_list, season_weights))
+    print(f"  NBA Valuation Pipeline v2 -{season}")
+    wstr = "  +  ".join(f"{s} (x{w:.2f})" for s, w in zip(seasons_list, season_weights))
     print(f"  Seasons: {wstr}")
     print(f"{'='*62}\n")
 
-    # ── Data ──────────────────────────────────────────────────────────────
-    print("── 1. Data ──")
+    # --Data --────────────────────────────────────────────────────────────
+    print("--1. Data --")
     box100         = get_box_scores(season)
     box_adv        = get_advanced_box(season)
     tracking       = get_all_tracking(season)
@@ -203,14 +203,14 @@ def run_full_pipeline(
     if len(seasons_list) > 1:
         print(f"  [combined] {len(stints)} total stints across {len(seasons_list)} seasons")
 
-    # ── Playmaking on/off (team-wide effects) ─────────────────────────────
-    print("\n── 1b. Playmaking on/off ──")
+    # --Playmaking on/off (team-wide effects) --───────────────────────────
+    print("\n--1b. Playmaking on/off --")
     playmaking_df = compute_playmaking_onoff(lineup_profile)
 
-    # ── Prior ─────────────────────────────────────────────────────────────
+    # --Prior --───────────────────────────────────────────────────────────
     # Merge passing stats into box_adv so POTENTIAL_AST / AST_ADJ are available
     # as prior model features without changing the model signature.
-    print("\n── 2. Prior model ──")
+    print("\n--2. Prior model --")
     passing_stats = get_passing_stats(season)
     if not passing_stats.empty and "PLAYER_ID" in passing_stats.columns:
         pass_cols = ["PLAYER_ID"] + [c for c in ["POTENTIAL_AST", "AST_ADJ"]
@@ -222,34 +222,34 @@ def run_full_pipeline(
     pm, scaler, feature_cols = build_prior_model(box100, box_adv, prior_targets)
     prior_df = predict_prior(pm, scaler, feature_cols, box100, box_adv)
 
-    # ── Stint matrix + RAPM ───────────────────────────────────────────────
-    print("\n── 3. Stint matrix ──")
+    # --Stint matrix + RAPM --─────────────────────────────────────────────
+    print("\n--3. Stint matrix --")
     X, y, weights, enc = build_stint_matrix(stints)
 
-    print("\n── 4. RAPM ──")
+    print("\n--4. RAPM --")
     rapm_results, alpha = fit_rapm(X, y, weights, enc, prior_df, prior_weight)
 
-    # ── Validation ────────────────────────────────────────────────────────
-    print("\n── 5. Tracking validation ──")
+    # --Validation --──────────────────────────────────────────────────────
+    print("\n--5. Tracking validation --")
     validated = validate_all_players(
         rapm_results, tracking,
         playmaking_df=playmaking_df,
         min_games=5, min_minutes=10.0,
     )
 
-    # ── Lineup synergy ────────────────────────────────────────────────────
-    print("\n── 6. Lineup synergy ──")
+    # --Lineup synergy --──────────────────────────────────────────────────
+    print("\n--6. Lineup synergy --")
     synergy_df = compute_synergy(stints, rapm_results, min_poss=synergy_min_poss)
     pair_df    = compute_pairwise_compatibility(stints, rapm_results, min_shared_poss=pair_min_poss)
 
-    # ── Outputs ───────────────────────────────────────────────────────────
-    print("\n── 7. Outputs ──")
+    # --Outputs --─────────────────────────────────────────────────────────
+    print("\n--7. Outputs --")
     screens = league_screener(validated)
     print_screener(screens)
     export_results(validated, pair_df)
 
     if roster_for_lineup:
-        print("\n── Optimal lineup from provided roster ──")
+        print("\n--Optimal lineup from provided roster --")
         best = find_best_lineup(roster_for_lineup, pair_df, rapm_results)
         print(best[["lineup_str","individual_rapm","compat_bonus","predicted_nr"]]
               .to_string(index=False))
@@ -264,7 +264,7 @@ def run_full_pipeline(
     }
 
 
-# ── entry point ────────────────────────────────────────────────────────────
+# --entry point --──────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import sys

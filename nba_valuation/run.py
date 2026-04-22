@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
+sys.stdout.reconfigure(encoding="utf-8")  # handle accented player names on Windows
 
 from output.report import run_full_pipeline
 from output.html_report import generate_report

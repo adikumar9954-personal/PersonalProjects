@@ -1,4 +1,4 @@
-"""
+﻿"""
 output/team_report.py
 =====================
 Generates a team-specific HTML report with:
@@ -80,7 +80,7 @@ def _get_team_players(validated, team_abbrev):
     # Try matching on TEAM_ABBREVIATION if available, else fall back to name search
     if "team" in validated.columns:
         return validated[validated["team"].str.upper() == team_abbrev.upper()]
-    # Fall back: match via rapm df which has player_id — just return all and note
+    # Fall back: match via rapm df which has player_id - just return all and note
     return validated
 
 
@@ -95,7 +95,7 @@ def generate_team_report(
     Generate a team-specific HTML report.
 
     team:        Team name e.g. "hornets", "lakers"
-    split_date:  "YYYY-MM-DD" — if provided, shows early vs recent comparison
+    split_date:  "YYYY-MM-DD" - if provided, shows early vs recent comparison
     path:        Where to save the HTML file
     """
     import pandas as pd
@@ -120,7 +120,7 @@ def generate_team_report(
     ]["PLAYER_ID"].astype(str).tolist()
 
     if not team_players:
-        print(f"  [warning] No players found for {team_abbrev} — showing all players")
+        print(f"  [warning] No players found for {team_abbrev} - showing all players")
 
     # Filter validated to team
     validated = out["validated"].copy()
@@ -181,13 +181,13 @@ def generate_team_report(
         roster_rows.append(f"""
         <tr>
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_name","—")))}</td>
-          <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "—"}</span></td>
-          <td class="num">{f"{row.get('prior',0):+.2f}" if row.get('prior') is not None else "—"}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_name","-")))}</td>
+          <td class="num"><span style="color:{_rapm_color(rapm_v)};font-weight:600">{f"{rapm_v:+.2f}" if rapm_v is not None else "-"}</span></td>
+          <td class="num">{f"{row.get('prior',0):+.2f}" if row.get('prior') is not None else "-"}</td>
           <td class="num"><span style="color:{_support_color(supp_v)}">{f"{supp_v:.0f}" if supp_v is not None else "N/A"}</span></td>
-          <td class="num">{f"{row.get('o_support',0):.0f}" if row.get('o_support') is not None else "—"}</td>
-          <td class="num">{f"{row.get('d_support',0):.0f}" if row.get('d_support') is not None else "—"}</td>
-          <td class="num">{delta_cell or "—"}</td>
+          <td class="num">{f"{row.get('o_support',0):.0f}" if row.get('o_support') is not None else "-"}</td>
+          <td class="num">{f"{row.get('d_support',0):.0f}" if row.get('d_support') is not None else "-"}</td>
+          <td class="num">{delta_cell or "-"}</td>
           <td class="flags">{flags_html}</td>
         </tr>""")
 
@@ -201,7 +201,7 @@ def generate_team_report(
         lineup_rows.append(f"""
         <tr>
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("players","—")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("players","-")))}</td>
           <td class="num">{row.get("possessions",0):.0f}</td>
           <td class="num">{row.get("actual_rapm",0):+.1f}</td>
           <td class="num" style="color:#666">{delta:+.1f}</td>
@@ -219,8 +219,8 @@ def generate_team_report(
         pair_rows.append(f"""
         <tr>
           <td class="num">{i}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_a","—")))}</td>
-          <td class="player-name">{html_lib.escape(str(row.get("player_b","—")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_a","-")))}</td>
+          <td class="player-name">{html_lib.escape(str(row.get("player_b","-")))}</td>
           <td class="num">{row.get("shared_poss",0):.0f}</td>
           <td class="num">{row.get("rapm_a",0):+.2f}</td>
           <td class="num">{row.get("rapm_b",0):+.2f}</td>
@@ -244,7 +244,7 @@ def generate_team_report(
             split_rows.append(f"""
             <tr>
               <td class="num">{i}</td>
-              <td class="player-name">{html_lib.escape(str(row.get("player_name","—")))}</td>
+              <td class="player-name">{html_lib.escape(str(row.get("player_name","-")))}</td>
               <td class="num">{row.get("rapm_early",0):+.2f}</td>
               <td class="num">{row.get("rapm_recent",0):+.2f}</td>
               <td class="num"><span style="color:{_rapm_color(d)};font-weight:600">{d:+.2f}</span></td>
@@ -253,7 +253,7 @@ def generate_team_report(
         split_html = f"""
         <div id="split" class="section">
           <div class="section-title">Early vs recent comparison</div>
-          <div class="section-desc">Split at {split_date}. Delta = recent RAPM minus early RAPM — positive means player improved.</div>
+          <div class="section-desc">Split at {split_date}. Delta = recent RAPM minus early RAPM - positive means player improved.</div>
           <table class="data-table">
             <thead><tr>
               <th>#</th><th>Player</th>
@@ -268,11 +268,11 @@ def generate_team_report(
     split_nav = '<button onclick="show(\'split\', this)">Early vs Recent</button>' if split_date else ""
 
     # ── Summary stats ────────────────────────────────────────────────────
-    best_player = validated.iloc[0]["player_name"] if len(validated) else "—"
+    best_player = validated.iloc[0]["player_name"] if len(validated) else "-"
     best_rapm   = validated.iloc[0]["rapm"] if len(validated) else 0
     n_players   = len(validated)
     avg_rapm    = validated["rapm"].mean() if len(validated) else 0
-    best_lineup = synergy.iloc[0]["players"][:50] if len(synergy) else "—"
+    best_lineup = synergy.iloc[0]["players"][:50] if len(synergy) else "-"
 
     # ── Assemble HTML ─────────────────────────────────────────────────────
     html = f"""<!DOCTYPE html>
@@ -280,7 +280,7 @@ def generate_team_report(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{team_title} — NBA Valuation {season}</title>
+<title>{team_title} - NBA Valuation {season}</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {{
@@ -451,6 +451,6 @@ function show(id, btn) {{
 
     if path:
         Path(path).write_text(html, encoding="utf-8")
-        print(f"[team_report] saved → {path}")
+        print(f"[team_report] saved -> {path}")
 
     return html
